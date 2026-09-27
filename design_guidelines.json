@@ -1,0 +1,57 @@
+{
+  "app_name": "Treats & Temptation by SK",
+  "theme": "Organic & Earthy / Warm Bakery aesthetic",
+  "archetype": "ORGANIC & EARTHY",
+  "colors": {
+    "background": "#FBF9F5",
+    "card_bg": "#FFFFFF",
+    "primary": "#8B4513",
+    "primary_hover": "#6F370F",
+    "secondary": "#D2691E",
+    "accent": "#DEB887",
+    "text_main": "#2C221E",
+    "text_muted": "#7A6B63",
+    "border": "#E8E2D5"
+  },
+  "typography": {
+    "heading_font": "Playfair Display, serif",
+    "body_font": "Plus Jakarta Sans, sans-serif"
+  },
+  "image_urls": [
+    {
+      "category": "Chocolate Cake",
+      "description": "Rich homemade chocolate cake slice",
+      "url": "https://images.unsplash.com/photo-1700448293876-07dca826c161?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzV8MHwxfHNlYXJjaHw0fHxob21lbWFkZSUyMGNob2NvbGF0ZSUyMGNha2UlMjBkZXNzZXJ0JTIwYmFrZXJ5fGVufDB8fHx8MTc5MDUxNDM2NXww&ixlib=rb-4.1.0&q=85"
+    },
+    {
+      "category": "Cinnamon Rolls",
+      "description": "Freshly baked gooey cinnamon rolls with icing",
+      "url": "https://images.unsplash.com/photo-1694632288834-17d86b340745?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwzfHxjaW5uYW1vbiUyMHJvbGxzJTIwZnJlc2glMjBiYWtlZCUyMHBhc3RyeXxlbnwwfHx8fDE3OTA1MTQzNjV8MA&ixlib=rb-4.1.0&q=85"
+    },
+    {
+      "category": "Banana Bread Loaf",
+      "description": "Chocolate chip banana bread loaf fresh from oven",
+      "url": "https://images.unsplash.com/photo-1621994214182-f467e6999dc9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODd8MHwxfHNlYXJjaHwzfHxjaG9jb2xhdGUlMjBjaGlwJTIwYmFuYW5hJTIwYnJlYWQlMjBsb2FmfGVufDB8fHx8MTc5MDUxNDM2NXww&ixlib=rb-4.1.0&q=85"
+    },
+    {
+      "category": "Brownies",
+      "description": "Fudge brownies stacked on plate",
+      "url": "https://images.unsplash.com/photo-1642453031286-8991becafe19?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NjV8MHwxfHNlYXJjaHw0fHxmdWRnZSUyMGJyb3duaWVzJTIwYmFrZXJ5JTIwYm94fGVufDB8fHx8MTc5MDUxNDM2NHww&ixlib=rb-4.1.0&q=85"
+    }
+  ],
+  "key_functionalities": [
+    "Dessert Matchmaker with Occasion, Mood, Budget, and People filters",
+    "Build Your Box (1 loaf, 2 cookies, 2 brownies, 1 cinnamon roll dynamic calculator)",
+    "Surprise Me 🎲 random intelligent baker's pick",
+    "Story Behind the Bake for every item",
+    "AI Baker Chat assistant for custom recommendations",
+    "Cart & WhatsApp order handoff pre-filled with order details",
+    "Instagram profile link integration (@treatsandtemptationbysk)"
+  ],
+  "universal_guidelines": [
+    "Use generous spacing (p-8, gap-8)",
+    "All interactive elements must include data-testid",
+    "Never use complete transparent backgrounds for overlays/headers",
+    "Ensure high contrast text for accessibility"
+  ]
+}
