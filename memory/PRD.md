@@ -17,14 +17,17 @@ Build an AI-powered dessert discovery site (not a plain bakery menu) for a home-
 6. WhatsApp order handoff — cart formatted into wa.me share link.
 
 ## Implemented (2026-02)
-- FastAPI backend with `/api/products`, `/api/match`, `/api/chat`, plus status endpoints.
-- 8-item catalogue (Chocolate Cake, Cinnamon Rolls, Banana Loaf, Fudge Brownies, Lemon Loaf, Coffee & Walnut, Cookie Jar, Cheesecake) with mood/occasion/price metadata.
+- FastAPI backend with `/api/products`, `/api/festive-boxes`, `/api/match`, `/api/match/save`, `/api/match/{id}`, `/api/chat`, plus status endpoints.
+- **7-loaf catalogue matching SK's real Instagram menu** (Chocolate Chip Banana Bread with walnut add-on, Apple Cinnamon, Lemon, Coconut, Coffee Walnut Crumble, Double Chocolate, Chocolate Malt) with mood/occasion/price metadata.
 - Deterministic scoring in `/api/match` (mood + occasion + budget + serves fit) → LLM prose bound to the chosen product name, with safety-net fallback if the model drifts.
 - `/api/chat` grounded to catalogue via system prompt; failures return a friendly reply with `ok=false`.
-- React frontend: hero, matchmaker form, live match result card, box builder with live totals, stories section, footer.
-- Full cart drawer: add-from-match, add-full-box, quantity +/-, remove, running total, "Order via WhatsApp", clear box.
+- **Festive Boxes**: 5 curated boxes (Anniversary, Birthday, Graduation, Eid, Baby Born) each with items and a computed total.
+- **Save & Share**: `/api/match/save` returns a short id → sharable `?match=<id>` URL; on load the frontend restores the match automatically.
+- React frontend: hero, matchmaker form, match result card with Save & Share, festive-boxes section, loaf-mix box builder, stories section, footer.
+- Full cart drawer: add-from-match, add-festive-box, add-builder, quantity +/-, remove, running total, "Order via WhatsApp", clear box.
 - Cart count badge in navbar (`data-testid=cart-count`).
 - AI Baker Chat drawer with loading indicator and visible error banner when backend is down.
+- **Real WhatsApp handoff to +92 322 4112832** on every WhatsApp button.
 - Emergent LLM Key integration (openai gpt-4o-mini).
 
 ## Tech Stack
