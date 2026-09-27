@@ -1,57 +1,95 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { ArrowRight, Instagram, MessageCircle, Minus, Plus, ShoppingBag, Sparkles, Trash2, WandSparkles, X } from "lucide-react";
+import { ArrowRight, Copy, Instagram, Link2, MessageCircle, Minus, Plus, ShoppingBag, Sparkles, Trash2, WandSparkles, X } from "lucide-react";
 import "@/App.css";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const WHATSAPP_PHONE = "923224112832"; // +92 322 4112832
 
-const occasions = ["Birthday", "Tea party", "Gift", "Anniversary", "Family gathering", "Just craving something"];
+const occasions = [
+  "Birthday",
+  "Anniversary",
+  "Tea party",
+  "Family gathering",
+  "Graduation",
+  "Eid",
+  "Baby born",
+  "Gift",
+  "Just craving something",
+];
 const moods = ["Chocolate lover", "Fresh & citrusy", "Warm & comforting", "Coffee lover", "Something different"];
 
-const BOX_MIX = [
-  { id: "banana-loaf", qty: 1, label: "loaf" },
-  { id: "cookie-jar", qty: 2, label: "cookies" },
-  { id: "brownies", qty: 2, label: "brownies" },
-  { id: "cinnamon-rolls", qty: 1, label: "cinnamon roll" },
+const DEFAULT_BOX = [
+  { id: "chocolate-chip-banana", qty: 1 },
+  { id: "apple-cinnamon", qty: 1 },
+  { id: "lemon-loaf", qty: 1 },
 ];
 
-function slug(x) { return x.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and"); }
+function slug(x) {
+  return x.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and");
+}
+
+function waLink(text) {
+  return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
+}
 
 function App() {
   const [products, setProducts] = useState([]);
+  const [boxes, setBoxes] = useState([]);
   const [occasion, setOccasion] = useState("Tea party");
   const [mood, setMood] = useState("Warm & comforting");
   const [people, setPeople] = useState(6);
-  const [budget, setBudget] = useState(1000);
+  const [budget, setBudget] = useState(1500);
   const [dietary, setDietary] = useState("No preference");
   const [match, setMatch] = useState(null);
   const [matchError, setMatchError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [savedNote, setSavedNote] = useState("");
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [builderQtys, setBuilderQtys] = useState({});
   const [chatOpen, setChatOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [chatError, setChatError] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [chat, setChat] = useState([
-    { role: "assistant", text: "Tell me who you’re baking for, and I’ll find the sweet spot." },
+    { role: "assistant", text: "Tell me who you're baking for, and I'll pick the loaf that fits the moment." },
   ]);
 
   useEffect(() => {
-    axios.get(`${API}/products`).then((r) => setProducts(r.data)).catch(() => setProducts([]));
+    axios.get(`${API}/products`).then((r) => {
+      setProducts(r.data);
+      const seed = Object.fromEntries(r.data.map((p) => [p.id, 0]));
+      DEFAULT_BOX.forEach(({ id, qty }) => { if (seed[id] !== undefined) seed[id] = qty; });
+      setBuilderQtys(seed);
+    }).catch(() => setProducts([]));
+    axios.get(`${API}/festive-boxes`).then((r) => setBoxes(r.data)).catch(() => setBoxes([]));
+
+    const params = new URLSearchParams(window.location.search);
+    const savedId = params.get("match");
+    if (savedId) {
+      axios.get(`${API}/match/${savedId}`).then((r) => {
+        setMatch({ product: r.data.product, explanation: r.data.explanation });
+        setTimeout(() => document.getElementById("match-result")?.scrollIntoView({ behavior: "smooth" }), 300);
+      }).catch(() => {});
+    }
   }, []);
 
   const productById = useMemo(() => Object.fromEntries(products.map((p) => [p.id, p])), [products]);
   const cartCount = useMemo(() => cart.reduce((n, i) => n + i.qty, 0), [cart]);
   const cartTotal = useMemo(() => cart.reduce((n, i) => n + i.qty * i.price, 0), [cart]);
-  const boxItems = useMemo(
-    () => BOX_MIX.map((m) => ({ ...m, product: productById[m.id] })).filter((m) => m.product),
-    [productById]
+  const builderItems = useMemo(
+    () => products.map((p) => ({ product: p, qty: builderQtys[p.id] || 0 })).filter((r) => r.qty > 0),
+    [products, builderQtys]
   );
-  const boxTotal = useMemo(
-    () => boxItems.reduce((n, m) => n + m.qty * m.product.price, 0),
-    [boxItems]
+  const builderTotal = useMemo(
+    () => builderItems.reduce((n, r) => n + r.qty * r.product.price, 0),
+    [builderItems]
   );
+
+  const bumpBuilder = (id, delta) =>
+    setBuilderQtys((q) => ({ ...q, [id]: Math.max(0, (q[id] || 0) + delta) }));
 
   const addToCart = (product, qty = 1) => {
     setCart((items) => {
@@ -61,10 +99,23 @@ function App() {
     });
     setCartOpen(true);
   };
-  const addBoxToCart = () => {
+  const addBuilderToCart = () => {
+    if (!builderItems.length) return;
     setCart((items) => {
       const next = [...items];
-      boxItems.forEach(({ product, qty }) => {
+      builderItems.forEach(({ product, qty }) => {
+        const existing = next.find((i) => i.id === product.id);
+        if (existing) existing.qty += qty;
+        else next.push({ id: product.id, name: product.name, price: product.price, image: product.image, qty });
+      });
+      return next;
+    });
+    setCartOpen(true);
+  };
+  const addFestiveBox = (box) => {
+    setCart((items) => {
+      const next = [...items];
+      box.items.forEach(({ product, qty }) => {
         const existing = next.find((i) => i.id === product.id);
         if (existing) existing.qty += qty;
         else next.push({ id: product.id, name: product.name, price: product.price, image: product.image, qty });
@@ -81,6 +132,7 @@ function App() {
   const runMatch = async () => {
     setLoading(true);
     setMatchError("");
+    setSavedNote("");
     try {
       const r = await axios.post(`${API}/match`, { occasion, mood, people, budget: Number(budget) || 0, dietary });
       setMatch(r.data);
@@ -97,9 +149,34 @@ function App() {
     const picked = products[Math.floor(Math.random() * products.length)];
     setMatch({
       product: picked,
-      explanation: `${picked.name} — a little baker's instinct says this is the one you didn't know you were craving.`,
+      explanation: `${picked.name} — a little baker's instinct says this is the loaf you didn't know you were craving.`,
     });
+    setSavedNote("");
     setTimeout(() => document.getElementById("match-result")?.scrollIntoView({ behavior: "smooth" }), 60);
+  };
+
+  const saveMatch = async () => {
+    if (!match || saving) return;
+    setSaving(true);
+    setSavedNote("");
+    try {
+      const r = await axios.post(`${API}/match/save`, {
+        product_id: match.product.id,
+        occasion, mood, people, budget: Number(budget) || 0, dietary,
+        explanation: match.explanation,
+      });
+      const url = `${window.location.origin}${window.location.pathname}?match=${r.data.id}`;
+      try {
+        await navigator.clipboard.writeText(url);
+        setSavedNote("Link copied — paste it anywhere to come back to this bake.");
+      } catch {
+        setSavedNote(url);
+      }
+    } catch {
+      setSavedNote("Couldn't save right now — please try again in a moment.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const sendChat = async () => {
@@ -127,11 +204,17 @@ function App() {
       const lines = cart.map((i) => `• ${i.qty}× ${i.name} — Rs. ${(i.qty * i.price).toLocaleString()}`).join("\n");
       text = `Hello Treats & Temptation by SK!\nI'd like to order:\n${lines}\n\nTotal: Rs. ${cartTotal.toLocaleString()}`;
     } else if (match) {
-      text = `Hello Treats & Temptation by SK!\nI'd like to order: ${match.product.name} — Rs. ${match.product.price.toLocaleString()}.`;
+      text = `Hello Treats & Temptation by SK!\nI'd like to order the ${match.product.name} — Rs. ${match.product.price.toLocaleString()}.`;
     } else {
       text = `Hello Treats & Temptation by SK! I'd like to place an order.`;
     }
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    window.open(waLink(text), "_blank");
+  };
+
+  const whatsappBox = (box) => {
+    const lines = box.items.map(({ product, qty }) => `• ${qty}× ${product.name}`).join("\n");
+    const text = `Hello Treats & Temptation by SK!\nI'd like to order the ${box.name}:\n${lines}\n\nTotal: Rs. ${box.total.toLocaleString()}`;
+    window.open(waLink(text), "_blank");
   };
 
   return (
@@ -142,7 +225,8 @@ function App() {
           <span>Treats &<br /><b>Temptation</b></span>
         </a>
         <div className="nav-links">
-          <a href="#match" data-testid="nav-match">Find your bake</a>
+          <a href="#match" data-testid="nav-match">Find your loaf</a>
+          <a href="#festive" data-testid="nav-festive">Festive boxes</a>
           <a href="#box" data-testid="nav-box">Build a box</a>
           <a href="#stories" data-testid="nav-stories">Bake stories</a>
         </div>
@@ -158,15 +242,15 @@ function App() {
       <main id="top">
         <section className="hero">
           <div className="hero-copy">
-            <p className="eyebrow">HOMEMADE, MATCHED TO THE MOMENT</p>
-            <h1>Find the bake<br /><em>you feel like.</em></h1>
+            <p className="eyebrow">HOMEMADE LOAVES, MATCHED TO THE MOMENT</p>
+            <h1>Find the loaf<br /><em>you feel like.</em></h1>
             <p className="hero-text">
               Not sure what to order? Tell us the occasion, the mood and who's coming.
-              We'll make the sweet decision easy.
+              We'll match you with the loaf that fits.
             </p>
             <div className="hero-actions">
               <a href="#match" className="button primary" data-testid="hero-find-bake">
-                Find my perfect bake <ArrowRight size={17} />
+                Find my perfect loaf <ArrowRight size={17} />
               </a>
               <button className="button text-button" onClick={surprise} data-testid="hero-surprise-button">
                 <WandSparkles size={17} /> Surprise me
@@ -178,8 +262,8 @@ function App() {
           </div>
           <div className="hero-image">
             <img
-              src="https://images.unsplash.com/photo-1700448293876-07dca826c161?auto=format&fit=crop&w=1300&q=85"
-              alt="Homemade chocolate cake"
+              src="https://images.unsplash.com/photo-1621994214182-f467e6999dc9?auto=format&fit=crop&w=1300&q=85"
+              alt="Homemade loaf on a wooden board"
               data-testid="hero-dessert-image"
             />
             <div className="image-stamp">made for<br /><b>your moment</b></div>
@@ -188,7 +272,7 @@ function App() {
 
         <section className="match-section" id="match">
           <div className="section-intro">
-            <p className="eyebrow">01 / THE DESSERT MATCHMAKER</p>
+            <p className="eyebrow">01 / THE LOAF MATCHMAKER</p>
             <h2>Let's find your<br /><em>perfect match.</em></h2>
             <p>A few little questions, then a recommendation that feels like it was made for you.</p>
           </div>
@@ -268,73 +352,112 @@ function App() {
                 <h2 data-testid="match-product-name">{match.product.name}</h2>
                 <p className="result-description" data-testid="match-explanation">{match.explanation}</p>
                 <p className="story">"{match.product.story}"</p>
+                {match.product.addons?.length > 0 && (
+                  <p className="addon-note" data-testid="match-addons">
+                    Add-on: {match.product.addons.map((a) => `${a.name} (+Rs. ${a.price})`).join(", ")}
+                  </p>
+                )}
                 <div className="result-meta">
                   <span>Serves {match.product.serves}</span>
                   <b>Rs. {match.product.price.toLocaleString()}</b>
                 </div>
-                <button className="button primary" onClick={() => addToCart(match.product)} data-testid="add-match-to-cart">
-                  Add to my box <ShoppingBag size={17} />
-                </button>
+                <div className="result-actions">
+                  <button className="button primary" onClick={() => addToCart(match.product)} data-testid="add-match-to-cart">
+                    Add to my box <ShoppingBag size={17} />
+                  </button>
+                  <button className="button ghost" onClick={saveMatch} disabled={saving} data-testid="save-match-button">
+                    {saving ? "Saving…" : <>Save & share <Link2 size={16} /></>}
+                  </button>
+                </div>
+                {savedNote && <p className="saved-note" data-testid="saved-note">{savedNote}</p>}
               </div>
             </div>
           </section>
         )}
 
+        <section className="festive-section" id="festive">
+          <div className="festive-heading">
+            <p className="eyebrow">02 / READY-MADE FESTIVE BOXES</p>
+            <h2>One-tap<br /><em>gifting.</em></h2>
+            <p>Curated loaf pairings for the moments you don't want to think twice about.</p>
+          </div>
+          <div className="festive-grid">
+            {boxes.map((box) => (
+              <article className="festive-card" key={box.id} data-testid={`festive-${box.id}`}>
+                <div className="festive-image">
+                  <img src={box.image} alt={box.name} />
+                </div>
+                <div className="festive-body">
+                  <h3>{box.name}</h3>
+                  <p className="festive-tagline">{box.tagline}</p>
+                  <ul className="festive-items">
+                    {box.items.map(({ product, qty }) => (
+                      <li key={product.id}>{qty}× {product.name}</li>
+                    ))}
+                  </ul>
+                  <div className="festive-footer">
+                    <b>Rs. {box.total.toLocaleString()}</b>
+                    <div className="festive-actions">
+                      <button className="button ghost small" onClick={() => addFestiveBox(box)} data-testid={`festive-add-${box.id}`}>
+                        Add to box
+                      </button>
+                      <button className="button primary small" onClick={() => whatsappBox(box)} data-testid={`festive-order-${box.id}`}>
+                        Order <MessageCircle size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="box-section" id="box">
           <div className="box-heading">
             <div>
-              <p className="eyebrow">02 / BUILD YOUR BOX</p>
-              <h2>A little bit of<br /><em>everything.</em></h2>
+              <p className="eyebrow">03 / BUILD YOUR OWN BOX</p>
+              <h2>Mix &<br /><em>match loaves.</em></h2>
             </div>
-            <p>Choose your mix. We'll do the wrapping.</p>
+            <p>Choose how many of each loaf. We'll wrap them together.</p>
           </div>
-          <div className="box-layout">
-            <div className="box-visual">
-              <div className="box-label">YOUR<br /><b>BAKE BOX</b></div>
-              <div className="box-items">
-                {boxItems.map((m, i) => (
-                  <div className={`box-piece piece-${i}`} key={m.id}>
-                    <img src={m.product.image} alt={m.product.name} />
-                    <span>{m.qty}×</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="box-list">
-              {boxItems.map((m) => (
-                <div className="box-row" key={m.id} data-testid={`box-row-${m.id}`}>
-                  <img src={m.product.image} alt={m.product.name} />
-                  <div>
-                    <b>{m.qty}× {m.product.name}</b>
-                    <small>handmade in small batches</small>
-                  </div>
-                  <strong>Rs. {(m.qty * m.product.price).toLocaleString()}</strong>
+          <div className="builder-grid">
+            {products.map((p) => (
+              <div className="builder-row" key={p.id} data-testid={`builder-row-${p.id}`}>
+                <img src={p.image} alt={p.name} />
+                <div className="builder-info">
+                  <b>{p.name}</b>
+                  <small>Rs. {p.price.toLocaleString()} · serves {p.serves}</small>
                 </div>
-              ))}
-              <div className="box-total">
-                <span>Box total</span>
-                <b data-testid="box-total">Rs. {boxTotal.toLocaleString()}</b>
+                <div className="builder-qty">
+                  <button onClick={() => bumpBuilder(p.id, -1)} data-testid={`builder-minus-${p.id}`} aria-label="decrease"><Minus size={14} /></button>
+                  <span data-testid={`builder-qty-${p.id}`}>{builderQtys[p.id] || 0}</span>
+                  <button onClick={() => bumpBuilder(p.id, 1)} data-testid={`builder-plus-${p.id}`} aria-label="increase"><Plus size={14} /></button>
+                </div>
               </div>
-              <button className="button primary wide" onClick={addBoxToCart} data-testid="add-box-to-cart">
-                Add this box to cart <ShoppingBag size={17} />
-              </button>
-            </div>
+            ))}
           </div>
+          <div className="builder-total">
+            <span>Your box</span>
+            <b data-testid="builder-total">Rs. {builderTotal.toLocaleString()}</b>
+          </div>
+          <button className="button primary wide" onClick={addBuilderToCart} disabled={!builderItems.length} data-testid="add-builder-to-cart">
+            Add this box to cart <ShoppingBag size={17} />
+          </button>
         </section>
 
         <section className="stories" id="stories">
           <div>
-            <p className="eyebrow">03 / STORY BEHIND THE BAKE</p>
+            <p className="eyebrow">04 / STORY BEHIND THE BAKE</p>
             <h2>Good things<br /><em>take time.</em></h2>
             <p className="story-lead">
-              Every bake has a mood, a memory, a reason to be shared. Here are a few of ours.
+              Every loaf has a mood, a memory, a reason to be shared. Here are a few of ours.
             </p>
             <a className="inline-link" href="https://www.instagram.com/treatsandtemptationbysk/" target="_blank" rel="noreferrer" data-testid="instagram-link">
               See more on Instagram <Instagram size={17} />
             </a>
           </div>
           <div className="story-grid">
-            {products.slice(1, 4).map((p) => (
+            {products.slice(0, 3).map((p) => (
               <article className="story-card" key={p.id}>
                 <img src={p.image} alt={p.name} />
                 <div>
@@ -365,7 +488,7 @@ function App() {
             <div className="cart-header">
               <div>
                 <p className="eyebrow">YOUR BAKE BOX</p>
-                <b>{cartCount ? `${cartCount} bake${cartCount === 1 ? "" : "s"} chosen` : "Nothing in the box yet"}</b>
+                <b>{cartCount ? `${cartCount} loaf${cartCount === 1 ? "" : "s"} chosen` : "Nothing in the box yet"}</b>
               </div>
               <button onClick={() => setCartOpen(false)} data-testid="close-cart" aria-label="Close cart">
                 <X />
@@ -374,7 +497,7 @@ function App() {
             <div className="cart-body">
               {cart.length === 0 ? (
                 <div className="cart-empty" data-testid="cart-empty-state">
-                  <p>Your box is empty. Find a match or build a box, and it will land right here.</p>
+                  <p>Your box is empty. Find a match, add a festive box, or build your own — it'll land right here.</p>
                 </div>
               ) : (
                 cart.map((i) => (
@@ -436,7 +559,7 @@ function App() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendChat()}
-              placeholder="e.g. something for 8 people…"
+              placeholder="e.g. something for 8 people, budget 2000…"
               data-testid="baker-chat-input"
             />
             <button onClick={sendChat} data-testid="send-baker-chat"><ArrowRight /></button>
