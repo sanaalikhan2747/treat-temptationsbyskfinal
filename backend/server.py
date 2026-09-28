@@ -148,19 +148,19 @@ PACKAGING = [
 FESTIVE_BOXES = [
     {"id": "anniversary-box", "name": "Anniversary Box", "tagline": "Slow, warm and a little bit romantic.",
      "items": [{"product_id": "coffee-walnut-loaf", "qty": 1}, {"product_id": "chocolate-filled-cookie", "qty": 4}],
-     "image": "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=900&q=85"},
+     "image": "https://images.unsplash.com/photo-1617118601021-4992c028fe5d?auto=format&fit=crop&w=900&q=85"},
     {"id": "birthday-box", "name": "Birthday Box", "tagline": "The loud, chocolatey kind of joy.",
      "items": [{"product_id": "chocolate-chip-banana", "qty": 1}, {"product_id": "double-chocolate-cookie", "qty": 4}, {"product_id": "brownies-batch", "qty": 1}],
-     "image": "https://images.unsplash.com/photo-1642453031286-8991becafe19?auto=format&fit=crop&w=900&q=85"},
+     "image": "https://images.unsplash.com/photo-1700045530510-6e03007a8f48?auto=format&fit=crop&w=900&q=85"},
     {"id": "graduation-box", "name": "Graduation Box", "tagline": "A proud, celebratory afternoon.",
      "items": [{"product_id": "coffee-walnut-loaf", "qty": 1}, {"product_id": "cinnamon-rolls-batch", "qty": 1}],
-     "image": "https://images.unsplash.com/photo-1694632288834-17d86b340745?auto=format&fit=crop&w=900&q=85"},
+     "image": "https://images.unsplash.com/photo-1764385827123-45525c44373c?auto=format&fit=crop&w=900&q=85"},
     {"id": "eid-box", "name": "Eid Box", "tagline": "Sweet, generous and made for sharing.",
      "items": [{"product_id": "coconut-loaf", "qty": 1}, {"product_id": "lotus-cookie", "qty": 4}, {"product_id": "papparoti-batch", "qty": 1}],
-     "image": "https://images.unsplash.com/photo-1568051243851-f9b136146e97?auto=format&fit=crop&w=900&q=85"},
+     "image": "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=900&q=85"},
     {"id": "baby-born-box", "name": "Baby Born Box", "tagline": "Gentle, bright and full of good wishes.",
      "items": [{"product_id": "lemon-loaf", "qty": 1}, {"product_id": "cinnamon-rolls-batch", "qty": 1}],
-     "image": "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?auto=format&fit=crop&w=900&q=85"},
+     "image": "https://images.unsplash.com/photo-1700045530510-6e03007a8f48?auto=format&fit=crop&w=900&q=85"},
 ]
 
 
@@ -311,6 +311,14 @@ async def list_packaging():
 @api_router.get("/festive-boxes")
 async def list_festive_boxes():
     return [_hydrate_box(b) for b in FESTIVE_BOXES]
+
+
+@api_router.get("/festive-boxes/{box_id}")
+async def get_festive_box(box_id: str):
+    for b in FESTIVE_BOXES:
+        if b["id"] == box_id:
+            return _hydrate_box(b)
+    raise HTTPException(status_code=404, detail="Festive box not found")
 
 
 @api_router.post("/match")

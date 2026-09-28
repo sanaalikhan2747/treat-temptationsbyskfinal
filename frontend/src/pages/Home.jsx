@@ -252,10 +252,12 @@ export default function Home() {
                   {box.items.map(({ product, qty }) => (<li key={product.id}>{qty}× {product.name}</li>))}
                 </ul>
                 <div className="festive-footer">
-                  <b>Rs. {box.total.toLocaleString()}</b>
-                  <button className="button primary small" onClick={() => addFestive(box)} data-testid={`festive-add-${box.id}`}>
-                    Add to box <ShoppingBag size={14} />
-                  </button>
+                  <b>from Rs. {box.total.toLocaleString()}</b>
+                  <div className="festive-actions">
+                    <Link className="button primary small" to={`/festive/${box.id}`} data-testid={`festive-customize-${box.id}`}>
+                      Customize <ArrowRight size={14} />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </article>

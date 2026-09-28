@@ -54,6 +54,17 @@
 .picker-qty button{border:0;background:transparent;cursor:pointer;color:var(--ink);display:grid;place-items:center;padding:3px}
 .picker-qty button:hover{color:var(--burnt)}
 .picker-qty span{font-size:13px;font-weight:600;min-width:16px;text-align:center}
+.picker-remove{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.9);border:1px solid var(--line);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--muted);transition:all .2s}
+.picker-remove:hover{color:var(--burnt);border-color:var(--burnt)}
+.empty-note{color:var(--muted);font-size:13px;font-style:italic;margin:12px 0 24px}
+.add-more-header{width:100%;display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);padding:18px 22px;cursor:pointer;margin:24px 0 0;text-align:left;transition:all .2s}
+.add-more-header:hover{border-color:var(--burnt)}
+.add-more-header b{font-size:13px;font-weight:600;color:var(--ink);display:block;margin-top:4px}
+.add-more-header svg{transition:transform .25s ease;flex-shrink:0}
+.add-more-header.open{border-color:var(--burnt);border-bottom:0}
+.add-more-header.open svg{transform:rotate(180deg)}
+.add-more-panel{background:#fff;border:1px solid var(--burnt);border-top:0;padding:20px 22px 26px;margin-bottom:24px}
+.add-more-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
 .pack-section,.message-section{margin-top:32px}
 .pack-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:14px}
 .pack-option{display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--line);background:#fff;cursor:pointer;text-align:left;transition:all .2s}
