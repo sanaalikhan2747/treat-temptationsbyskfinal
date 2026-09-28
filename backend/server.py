@@ -139,9 +139,12 @@ PRODUCTS = [
 
 
 PACKAGING = [
-    {"id": "plain-white", "name": "Plain White Box", "price": 100, "ribbon": None},
-    {"id": "white-ribbon", "name": "White Box with White Ribbon", "price": 150, "ribbon": "white"},
-    {"id": "pink-ribbon", "name": "White Box with Pink Ribbon", "price": 150, "ribbon": "pink"},
+    {"id": "clear-box", "name": "Clear Plastic Box with Pink Ribbon", "price": 150, "ribbon": "pink", "style": "clear",
+     "image": "https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/byzd23k4_2981-Pastry-Box-9-x-6.webp"},
+    {"id": "white-box", "name": "White Cardboard Box with Pink Ribbon", "price": 150, "ribbon": "pink", "style": "white",
+     "image": "https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/ww1p99rw_2666-Brownie-Box-6x6x2.webp"},
+    {"id": "kraft-box", "name": "Brown Kraft Box with Pink Ribbon", "price": 150, "ribbon": "pink", "style": "kraft",
+     "image": "https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/98od3myz_2666-1-Brownie-Box-6-x-6-x-2-4-Pcs-.webp"},
 ]
 
 
@@ -445,7 +448,7 @@ async def create_order(payload: CreateOrderRequest):
     order_doc = {
         "order_number": order_number,
         "items": lines,
-        "packaging": ({"id": pack["id"], "name": pack["name"], "price": pack["price"], "ribbon": pack["ribbon"]} if pack else None),
+        "packaging": ({"id": pack["id"], "name": pack["name"], "price": pack["price"], "ribbon": pack["ribbon"], "style": pack.get("style"), "image": pack.get("image")} if pack else None),
         "personalized_message": payload.personalized_message or "",
         "customer": payload.customer.model_dump(),
         "subtotal": subtotal,

@@ -6,9 +6,12 @@ import { useCart } from "@/state/CartContext";
 import { flyToBox } from "@/lib/flyToBox";
 
 const RIBBONS = [
-  { id: "plain-white", label: "Plain white box", price: 100, ribbon: null },
-  { id: "white-ribbon", label: "White ribbon", price: 150, ribbon: "white" },
-  { id: "pink-ribbon", label: "Pink ribbon", price: 150, ribbon: "pink" },
+  { id: "clear-box", label: "Clear Plastic Box", price: 150, ribbon: "pink", style: "clear",
+    image: "https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/byzd23k4_2981-Pastry-Box-9-x-6.webp" },
+  { id: "white-box", label: "White Cardboard Box", price: 150, ribbon: "pink", style: "white",
+    image: "https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/ww1p99rw_2666-Brownie-Box-6x6x2.webp" },
+  { id: "kraft-box", label: "Brown Kraft Box", price: 150, ribbon: "pink", style: "kraft",
+    image: "https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/98od3myz_2666-1-Brownie-Box-6-x-6-x-2-4-Pcs-.webp" },
 ];
 
 const CATEGORY_LABEL = { loaf: "Loaves", cheesecake: "Cheesecake & desserts", batch: "Batches", cookie: "Cookies" };
@@ -20,7 +23,7 @@ export default function FestiveBoxEditor() {
   const [box, setBox] = useState(null);
   const [products, setProducts] = useState([]);
   const [selection, setSelection] = useState({}); // {product_id: qty}
-  const [pack, setPack] = useState("pink-ribbon");
+  const [pack, setPack] = useState("white-box");
   const [message, setMessage] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   const [addCat, setAddCat] = useState("loaf");
@@ -51,6 +54,7 @@ export default function FestiveBoxEditor() {
   const packOption = RIBBONS.find((r) => r.id === pack);
   const total = itemsTotal + (packOption?.price || 0);
   const ribbonClass = packOption?.ribbon ? `ribbon-${packOption.ribbon}` : "";
+  const styleClass = packOption?.style ? `box-style-${packOption.style}` : "";
 
   const bump = (product, delta, srcEl) => {
     const currentQty = selection[product.id] || 0;
@@ -159,6 +163,7 @@ export default function FestiveBoxEditor() {
 
           <div className="pack-section">
             <p className="eyebrow">03 / PICK YOUR PACKAGING</p>
+            <p className="pack-hint">Every box comes tied with a pink ribbon.</p>
             <div className="pack-options">
               {RIBBONS.map((r) => (
                 <button
@@ -167,10 +172,10 @@ export default function FestiveBoxEditor() {
                   onClick={() => setPack(r.id)}
                   data-testid={`festive-pack-${r.id}`}
                 >
-                  <span className={`pack-swatch pack-swatch-${r.id}`} />
+                  <img src={r.image} alt={r.label} className="pack-photo" />
                   <span>
                     <b>{r.label}</b>
-                    <small>+ Rs. {r.price}</small>
+                    <small>+ Rs. {r.price} · pink ribbon included</small>
                   </span>
                 </button>
               ))}
@@ -192,7 +197,7 @@ export default function FestiveBoxEditor() {
 
         <aside className="build-preview">
           <p className="eyebrow">YOUR BOX</p>
-          <div className={`preview-box ${ribbonClass}`} ref={boxRef} data-testid="festive-preview-box">
+          <div className={`preview-box ${ribbonClass} ${styleClass}`} ref={boxRef} data-testid="festive-preview-box">
             <div className="preview-lid" />
             <div className="preview-body">
               {chosen.length === 0 ? (

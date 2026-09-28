@@ -5,15 +5,18 @@ import { api } from "@/state/api";
 import { useCart } from "@/state/CartContext";
 
 const PACK_LABELS = {
-  "plain-white": "Plain white box",
-  "white-ribbon": "White box with white ribbon",
-  "pink-ribbon": "White box with pink ribbon",
+  "clear-box": "Clear Plastic Box with Pink Ribbon",
+  "white-box": "White Cardboard Box with Pink Ribbon",
+  "kraft-box": "Brown Kraft Box with Pink Ribbon",
 };
 
 const PACKAGING_FALLBACK = [
-  { id: "plain-white", name: "Plain White Box", price: 100, ribbon: null },
-  { id: "white-ribbon", name: "White Box with White Ribbon", price: 150, ribbon: "white" },
-  { id: "pink-ribbon", name: "White Box with Pink Ribbon", price: 150, ribbon: "pink" },
+  { id: "clear-box", name: "Clear Plastic Box with Pink Ribbon", price: 150, ribbon: "pink", style: "clear",
+    image: "https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/byzd23k4_2981-Pastry-Box-9-x-6.webp" },
+  { id: "white-box", name: "White Cardboard Box with Pink Ribbon", price: 150, ribbon: "pink", style: "white",
+    image: "https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/ww1p99rw_2666-Brownie-Box-6x6x2.webp" },
+  { id: "kraft-box", name: "Brown Kraft Box with Pink Ribbon", price: 150, ribbon: "pink", style: "kraft",
+    image: "https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/98od3myz_2666-1-Brownie-Box-6-x-6-x-2-4-Pcs-.webp" },
 ];
 
 export default function Checkout() {
@@ -130,6 +133,7 @@ export default function Checkout() {
           </div>
 
           <h2 className="section-h">Packaging</h2>
+          <p className="pack-hint">Every box is tied with a pink ribbon.</p>
           <div className="pack-options">
             {packagings.map((p) => (
               <button
@@ -138,7 +142,7 @@ export default function Checkout() {
                 onClick={() => setPackaging(p.id)}
                 data-testid={`checkout-pack-${p.id}`}
               >
-                <span className={`pack-swatch pack-swatch-${p.id}`} />
+                {p.image ? <img src={p.image} alt={p.name} className="pack-photo" /> : <span className={`pack-swatch pack-swatch-${p.id}`} />}
                 <span>
                   <b>{p.name}</b>
                   <small>+ Rs. {p.price}</small>
