@@ -60,9 +60,14 @@ def test_packaging_three_options():
     data = r.json()
     assert len(data) == 3
     by = {p["id"]: p for p in data}
-    assert by["plain-white"]["price"] == 100 and by["plain-white"]["ribbon"] is None
-    assert by["white-ribbon"]["price"] == 150 and by["white-ribbon"]["ribbon"] == "white"
-    assert by["pink-ribbon"]["price"] == 150 and by["pink-ribbon"]["ribbon"] == "pink"
+    assert set(by.keys()) == {"clear-box", "white-box", "kraft-box"}
+    styles = {"clear-box": "clear", "white-box": "white", "kraft-box": "kraft"}
+    for pid, style in styles.items():
+        opt = by[pid]
+        assert opt["price"] == 150
+        assert opt["ribbon"] == "pink"
+        assert opt["style"] == style
+        assert "customer-assets-rejwkqb3.emergentagent" in opt["image"]
 
 
 def test_festive_boxes_five_and_totals():
@@ -99,7 +104,7 @@ def test_order_happy_path():
             {"product_id": "brownies-batch", "qty": 2, "custom_box": True},
             {"product_id": "chocolate-chip-cookie", "qty": 4, "custom_box": True},
         ],
-        "packaging_id": "pink-ribbon",
+        "packaging_id": "kraft-box",
         "personalized_message": "Happy birthday",
         "customer": _customer(),
     }
@@ -112,6 +117,8 @@ def test_order_happy_path():
     assert prices["chocolate-chip-cookie"] == 200
     assert body["subtotal"] == 275 * 2 + 200 * 4  # 1350
     assert body["packaging"]["ribbon"] == "pink"
+    assert body["packaging"]["style"] == "kraft"
+    assert "customer-assets-rejwkqb3.emergentagent" in body["packaging"]["image"]
     assert body["packaging_total"] == 150
     assert body["total"] == 1500
     assert body["status"] == "pending_confirmation"
@@ -186,7 +193,7 @@ def test_order_from_festive_editor_uses_full_prices():
             {"product_id": "lotus-cookie", "qty": 4, "custom_box": False},
             {"product_id": "papparoti-batch", "qty": 1, "custom_box": False},
         ],
-        "packaging_id": "pink-ribbon",
+        "packaging_id": "clear-box",
         "customer": _customer(),
     }
     r = requests.post(f"{BASE}/api/orders", json=payload, timeout=30)
@@ -198,3 +205,51 @@ def test_order_from_festive_editor_uses_full_prices():
     assert prices["papparoti-batch"] == 800
     assert body["subtotal"] == 1200 + 4 * 300 + 800  # 3200
     assert body["total"] == 3200 + 150
+    assert body["packaging"]["style"] == "clear"
+
+
+# ---------- Iteration 6: new packaging ----------
+def test_order_old_packaging_id_404():
+    r = requests.post(f"{BASE}/api/orders", json={
+        "items": [{"product_id": "coconut-loaf", "qty": 1}],
+        "packaging_id": "pink-ribbon",
+        "customer": _customer(),
+    }, timeout=20)
+    assert r.status_code == 404
+
+
+def test_order_coconut_loaf_kraft_box_total():
+    r = requests.post(f"{BASE}/api/orders", json={
+        "items": [{"product_id": "coconut-loaf", "qty": 1}],
+        "packaging_id": "kraft-box",
+        "customer": _customer(),
+    }, timeout=30)
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["subtotal"] == 1200
+    assert body["packaging_total"] == 150
+    assert body["total"] == 1350
+    assert body["packaging"]["style"] == "kraft"
+    assert body["packaging"]["name"] == "Brown Kraft Box with Pink Ribbon"
+
+
+def test_chat_endpoint():
+    r = requests.post(f"{BASE}/api/chat", json={"message": "What do you recommend for tea?"}, timeout=60)
+    assert r.status_code == 200
+    data = r.json()
+    assert "reply" in data and "session_id" in data
+
+
+def test_match_save_and_get():
+    m = requests.post(f"{BASE}/api/match", json={
+        "occasion": "Tea party", "mood": "Warm & comforting", "people": 6, "budget": 1500,
+    }, timeout=60).json()
+    save = requests.post(f"{BASE}/api/match/save", json={
+        "product_id": m["product"]["id"], "occasion": "Tea party", "mood": "Warm & comforting",
+        "people": 6, "budget": 1500, "explanation": m["explanation"],
+    }, timeout=20)
+    assert save.status_code == 200
+    mid = save.json()["id"]
+    g = requests.get(f"{BASE}/api/match/{mid}", timeout=20)
+    assert g.status_code == 200
+    assert g.json()["product"]["id"] == m["product"]["id"]
