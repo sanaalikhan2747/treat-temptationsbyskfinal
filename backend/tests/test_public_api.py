@@ -146,3 +146,55 @@ def test_order_empty_items_400():
 def test_order_unknown_number_404():
     r = requests.get(f"{BASE}/api/orders/UNKNOWN", timeout=20)
     assert r.status_code == 404
+
+
+# ---------- Iteration 5: festive box by id + new imagery ----------
+NEW_PHOTO_IDS = ["1617118601021", "1700045530510", "1764385827123", "1513201099705"]
+
+
+def test_festive_boxes_new_image_urls():
+    r = requests.get(f"{BASE}/api/festive-boxes", timeout=20)
+    assert r.status_code == 200
+    boxes = r.json()
+    assert len(boxes) == 5
+    for b in boxes:
+        assert any(pid in b["image"] for pid in NEW_PHOTO_IDS), \
+            f"Box {b['id']} image not from new photo set: {b['image']}"
+
+
+def test_get_festive_box_eid_hydrated():
+    r = requests.get(f"{BASE}/api/festive-boxes/eid-box", timeout=20)
+    assert r.status_code == 200
+    b = r.json()
+    assert b["id"] == "eid-box"
+    ids_qty = {it["product"]["id"]: it["qty"] for it in b["items"]}
+    assert ids_qty == {"coconut-loaf": 1, "lotus-cookie": 4, "papparoti-batch": 1}
+    # Total = 1200 + 4*300 + 800 = 3200
+    assert b["total"] == 3200
+
+
+def test_get_festive_box_unknown_404():
+    r = requests.get(f"{BASE}/api/festive-boxes/unknown-box", timeout=20)
+    assert r.status_code == 404
+
+
+def test_order_from_festive_editor_uses_full_prices():
+    # Simulates order placed from FestiveBoxEditor: custom_box=False, full prices.
+    payload = {
+        "items": [
+            {"product_id": "coconut-loaf", "qty": 1, "custom_box": False},
+            {"product_id": "lotus-cookie", "qty": 4, "custom_box": False},
+            {"product_id": "papparoti-batch", "qty": 1, "custom_box": False},
+        ],
+        "packaging_id": "pink-ribbon",
+        "customer": _customer(),
+    }
+    r = requests.post(f"{BASE}/api/orders", json=payload, timeout=30)
+    assert r.status_code == 200, r.text
+    body = r.json()
+    prices = {i["product_id"]: i["unit_price"] for i in body["items"]}
+    assert prices["coconut-loaf"] == 1200
+    assert prices["lotus-cookie"] == 300
+    assert prices["papparoti-batch"] == 800
+    assert body["subtotal"] == 1200 + 4 * 300 + 800  # 3200
+    assert body["total"] == 3200 + 150

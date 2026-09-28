@@ -27,9 +27,11 @@ AI-powered dessert discovery + custom bake ordering site for home-baker **Sana K
   - **Cookies (4, per piece)**: Chocolate Chip 200, Chocolate Filled 250, Lotus 300, Double Chocolate 300.
 - **Custom-box unit pricing** for small mixes: brownie 275, cinnamon roll 375, papparoti 225, éclair 250, cookies at piece price.
 - **Packaging**: Plain White (Rs 100), White Ribbon (Rs 150), Pink Ribbon (Rs 150).
-- **Pages/routes** via react-router: `/`, `/menu`, `/build`, `/checkout`, `/order/:orderNumber`.
-- **Custom Box Builder** with flying-image animation into the visual box; ribbon renders when selected; personalized message shows as a hanging tag.
-- **Checkout** with form validation (name/phone/address required), delivery date, notes.
+- **Pages/routes** via react-router: `/`, `/menu`, `/build`, `/festive/:boxId`, `/checkout`, `/order/:orderNumber`.
+- **Custom Box Builder** (`/build`) with flying-image animation; ribbon renders when selected; personalized message shows as a hanging tag; per-piece pricing.
+- **Festive Box Editor** (`/festive/:boxId`) — start from a curated pairing (Anniversary/Birthday/Graduation/Eid/Baby Born), add/remove/swap items via a full-catalogue picker, adjust qty, swap ribbon, add note; uses each product's full/batch price on checkout.
+- **Home festive cards** show pink gift-box imagery + a "Customize" button that opens the editor.
+- **Checkout** with form validation, delivery date, notes, packaging cache fallback (no flicker).
 - **Orders persisted** in MongoDB (`db.orders`) with unique `TT######` order number.
 - **Order success page** with formatted WhatsApp handoff pre-filled with every line item + packaging + note + customer info; SK confirms & shares bank details.
 - **Save & Share match** — `?match=<id>` URL, copy-to-clipboard.

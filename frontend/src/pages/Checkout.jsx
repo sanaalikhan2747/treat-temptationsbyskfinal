@@ -10,9 +10,15 @@ const PACK_LABELS = {
   "pink-ribbon": "White box with pink ribbon",
 };
 
+const PACKAGING_FALLBACK = [
+  { id: "plain-white", name: "Plain White Box", price: 100, ribbon: null },
+  { id: "white-ribbon", name: "White Box with White Ribbon", price: 150, ribbon: "white" },
+  { id: "pink-ribbon", name: "White Box with Pink Ribbon", price: 150, ribbon: "pink" },
+];
+
 export default function Checkout() {
   const { items, packagingId, message, setPackaging, setMessage, clearCart } = useCart();
-  const [packagings, setPackagings] = useState([]);
+  const [packagings, setPackagings] = useState(PACKAGING_FALLBACK);
   const [form, setForm] = useState({
     name: "", phone: "", address: "", email: "", delivery_date: "", notes: "",
   });
@@ -22,7 +28,7 @@ export default function Checkout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get("/packaging").then((r) => setPackagings(r.data)).catch(() => setPackagings([]));
+    api.get("/packaging").then((r) => setPackagings(r.data)).catch(() => {});
   }, []);
 
   const subtotal = useMemo(() => items.reduce((n, i) => n + i.qty * i.price, 0), [items]);
