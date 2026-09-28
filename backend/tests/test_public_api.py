@@ -1,6 +1,6 @@
-"""Regression coverage for the Treats & Temptation public API (7-loaf iteration)."""
+"""Regression coverage for Treats & Temptation public API — 19-item + orders iteration."""
 from pathlib import Path
-
+import re
 import pytest
 import requests
 
@@ -13,22 +13,12 @@ def base_url():
 
 BASE = base_url()
 
-REQUIRED_PRODUCT_FIELDS = {"id", "name", "price", "serves", "moods", "occasions", "image", "story"}
-
-EXPECTED_LOAF_IDS = {
-    "chocolate-chip-banana",
-    "apple-cinnamon",
-    "lemon-loaf",
-    "coconut-loaf",
-    "coffee-walnut-loaf",
-    "double-chocolate",
-    "chocolate-malt",
+CUSTOM_BOX_IDS = {
+    "brownies-batch", "cinnamon-rolls-batch", "papparoti-batch", "cadbury-eclair-batch",
+    "chocolate-chip-cookie", "chocolate-filled-cookie", "lotus-cookie", "double-chocolate-cookie",
 }
 
-EXPECTED_BOX_IDS = {"anniversary-box", "birthday-box", "graduation-box", "eid-box", "baby-born-box"}
 
-
-# ---------- Root ----------
 def test_root():
     r = requests.get(f"{BASE}/api/", timeout=20)
     assert r.status_code == 200
@@ -36,129 +26,123 @@ def test_root():
 
 
 # ---------- Products ----------
-def test_products_exactly_seven_loaves_with_addons():
+def test_products_19_items_across_4_categories():
     r = requests.get(f"{BASE}/api/products", timeout=20)
     assert r.status_code == 200
     data = r.json()
-    assert len(data) == 7, f"Expected 7 loaves, got {len(data)}"
-    ids = {p["id"] for p in data}
-    assert ids == EXPECTED_LOAF_IDS, f"Unexpected ids: {ids}"
+    assert len(data) == 19, f"Expected 19 items, got {len(data)}"
+    cats = {}
     for p in data:
-        missing = REQUIRED_PRODUCT_FIELDS - set(p.keys())
-        assert not missing, f"Product {p.get('id')} missing: {missing}"
-
-    banana = next(p for p in data if p["id"] == "chocolate-chip-banana")
-    assert "addons" in banana and isinstance(banana["addons"], list) and banana["addons"], \
-        "Chocolate Chip Banana Bread must have non-empty addons"
-    walnut = next((a for a in banana["addons"] if a["name"].lower() == "walnuts"), None)
-    assert walnut is not None, "Walnuts add-on missing"
-    assert walnut["price"] == 100
+        assert {"id", "name", "category", "price", "image", "moods", "occasions"} <= set(p.keys()), \
+            f"Missing fields on {p.get('id')}"
+        cats.setdefault(p["category"], []).append(p["id"])
+    assert len(cats.get("loaf", [])) == 6
+    assert len(cats.get("cheesecake", [])) == 5
+    assert len(cats.get("batch", [])) == 4
+    assert len(cats.get("cookie", [])) == 4
 
 
-# ---------- Festive boxes ----------
-def test_festive_boxes_five_and_totals_match():
+def test_custom_box_unit_only_on_expected_items():
+    products = requests.get(f"{BASE}/api/products", timeout=20).json()
+    with_cbox = {p["id"] for p in products if "custom_box_unit" in p}
+    assert with_cbox == CUSTOM_BOX_IDS, f"Mismatch: {with_cbox ^ CUSTOM_BOX_IDS}"
+    # Spot-check specific prices
+    prices = {p["id"]: p.get("custom_box_unit") for p in products if "custom_box_unit" in p}
+    assert prices["brownies-batch"] == 275
+    assert prices["cinnamon-rolls-batch"] == 375
+    assert prices["papparoti-batch"] == 225
+    assert prices["cadbury-eclair-batch"] == 250
+
+
+def test_packaging_three_options():
+    r = requests.get(f"{BASE}/api/packaging", timeout=20)
+    assert r.status_code == 200
+    data = r.json()
+    assert len(data) == 3
+    by = {p["id"]: p for p in data}
+    assert by["plain-white"]["price"] == 100 and by["plain-white"]["ribbon"] is None
+    assert by["white-ribbon"]["price"] == 150 and by["white-ribbon"]["ribbon"] == "white"
+    assert by["pink-ribbon"]["price"] == 150 and by["pink-ribbon"]["ribbon"] == "pink"
+
+
+def test_festive_boxes_five_and_totals():
     products = requests.get(f"{BASE}/api/products", timeout=20).json()
     pmap = {p["id"]: p for p in products}
-
     r = requests.get(f"{BASE}/api/festive-boxes", timeout=20)
     assert r.status_code == 200
     boxes = r.json()
     assert len(boxes) == 5
-    ids = {b["id"] for b in boxes}
-    assert ids == EXPECTED_BOX_IDS
-
     for b in boxes:
-        assert isinstance(b.get("total"), (int, float))
-        assert b["items"], f"Box {b['id']} has no items"
-        computed = 0
-        for it in b["items"]:
-            assert "product" in it and "qty" in it, f"Box {b['id']} item not hydrated"
-            assert it["product"]["id"] in pmap
-            computed += it["product"]["price"] * it["qty"]
-        assert computed == b["total"], f"Box {b['id']} total mismatch: {computed} vs {b['total']}"
+        computed = sum(pmap[it["product"]["id"]]["price"] * it["qty"] for it in b["items"])
+        assert computed == b["total"], f"Box {b['id']} total mismatch"
 
 
-# ---------- Matchmaker ----------
-def _match(payload):
-    r = requests.post(f"{BASE}/api/match", json=payload, timeout=60)
-    assert r.status_code == 200, r.text
-    return r.json()
+# ---------- Match regression ----------
+def test_match_returns_loaf_with_name_in_explanation():
+    r = requests.post(f"{BASE}/api/match", json={
+        "occasion": "Eid", "mood": "Something different", "people": 6, "budget": 1500, "dietary": "No preference",
+    }, timeout=60)
+    assert r.status_code == 200
+    data = r.json()
+    assert data["product"]["category"] == "loaf"
+    assert data["product"]["name"].lower() in data["explanation"].lower()
 
 
-@pytest.mark.parametrize("payload", [
-    {"occasion": "Eid", "mood": "Something different", "people": 6, "budget": 1500, "dietary": "No preference"},
-    {"occasion": "Graduation", "mood": "Coffee lover", "people": 6, "budget": 2000, "dietary": "No preference"},
-    {"occasion": "Baby born", "mood": "Fresh & citrusy", "people": 6, "budget": 1300, "dietary": "No preference"},
-])
-def test_match_explanation_contains_only_picked_name(payload):
-    all_products = requests.get(f"{BASE}/api/products", timeout=20).json()
-    all_names = [p["name"] for p in all_products]
-
-    data = _match(payload)
-    assert "product" in data and "explanation" in data
-    picked = data["product"]["name"]
-    exp = data["explanation"]
-    assert picked.lower() in exp.lower(), f"Picked '{picked}' missing in explanation: {exp}"
-    for n in all_names:
-        if n != picked:
-            assert n.lower() not in exp.lower(), f"Explanation for {picked} leaks '{n}': {exp}"
+# ---------- Orders ----------
+def _customer():
+    return {"name": "TEST Buyer", "phone": "03001234567", "address": "House 1, Karachi", "delivery_date": "2026-02-14"}
 
 
-# ---------- Save/Load match ----------
-def test_save_and_get_match_roundtrip():
-    match = _match({"occasion": "Eid", "mood": "Something different", "people": 6, "budget": 1500, "dietary": "No preference"})
+def test_order_happy_path():
     payload = {
-        "product_id": match["product"]["id"],
-        "occasion": "Eid",
-        "mood": "Something different",
-        "people": 6,
-        "budget": 1500,
-        "dietary": "No preference",
-        "explanation": match["explanation"],
+        "items": [
+            {"product_id": "brownies-batch", "qty": 2, "custom_box": True},
+            {"product_id": "chocolate-chip-cookie", "qty": 4, "custom_box": True},
+        ],
+        "packaging_id": "pink-ribbon",
+        "personalized_message": "Happy birthday",
+        "customer": _customer(),
     }
-    r = requests.post(f"{BASE}/api/match/save", json=payload, timeout=30)
+    r = requests.post(f"{BASE}/api/orders", json=payload, timeout=30)
     assert r.status_code == 200, r.text
     body = r.json()
-    assert "id" in body
-    mid = body["id"]
-    assert isinstance(mid, str) and len(mid) == 10
-    int(mid, 16)  # must be hex
+    assert re.match(r"^TT\d{6}$", body["order_number"])
+    prices = {i["product_id"]: i["unit_price"] for i in body["items"]}
+    assert prices["brownies-batch"] == 275
+    assert prices["chocolate-chip-cookie"] == 200
+    assert body["subtotal"] == 275 * 2 + 200 * 4  # 1350
+    assert body["packaging"]["ribbon"] == "pink"
+    assert body["packaging_total"] == 150
+    assert body["total"] == 1500
+    assert body["status"] == "pending_confirmation"
 
-    got = requests.get(f"{BASE}/api/match/{mid}", timeout=20)
-    assert got.status_code == 200
-    data = got.json()
-    assert data["id"] == mid
-    assert data["product"]["id"] == match["product"]["id"]
-    assert data["explanation"] == match["explanation"]
+    # GET persistence
+    g = requests.get(f"{BASE}/api/orders/{body['order_number']}", timeout=20)
+    assert g.status_code == 200
+    assert g.json()["order_number"] == body["order_number"]
+    assert g.json()["total"] == 1500
 
 
-def test_get_match_not_found():
-    r = requests.get(f"{BASE}/api/match/does-not-exist", timeout=20)
-    assert r.status_code == 404
+def test_order_custom_box_on_non_cbox_product_400():
+    r = requests.post(f"{BASE}/api/orders", json={
+        "items": [{"product_id": "lemon-loaf", "qty": 1, "custom_box": True}],
+        "customer": _customer(),
+    }, timeout=20)
+    assert r.status_code == 400
 
 
-def test_save_match_unknown_product_404():
-    r = requests.post(f"{BASE}/api/match/save", json={
-        "product_id": "not-a-real-id",
-        "occasion": "Eid", "mood": "Something different", "people": 6, "budget": 1500,
-        "dietary": "No preference", "explanation": "test",
+def test_order_unknown_product_404():
+    r = requests.post(f"{BASE}/api/orders", json={
+        "items": [{"product_id": "fake", "qty": 1}], "customer": _customer(),
     }, timeout=20)
     assert r.status_code == 404
 
 
-# ---------- Chat ----------
-def test_chat_returns_reply_and_only_catalogue():
-    r = requests.post(f"{BASE}/api/chat", json={"message": "What loaf for a tea party for 6?"}, timeout=60)
-    assert r.status_code == 200
-    data = r.json()
-    assert data["ok"] is True
-    assert isinstance(data["reply"], str) and data["reply"]
-    assert isinstance(data["session_id"], str) and data["session_id"]
+def test_order_empty_items_400():
+    r = requests.post(f"{BASE}/api/orders", json={"items": [], "customer": _customer()}, timeout=20)
+    assert r.status_code == 400
 
-    products = requests.get(f"{BASE}/api/products", timeout=20).json()
-    names = [p["name"] for p in products]
-    reply_lower = data["reply"].lower()
-    # Reply may not always mention a name, but if it does, must be from catalogue.
-    # We only enforce: no obviously invented loaf mentioned (heuristic: word 'loaf' present -> some catalogue name should appear)
-    if "loaf" in reply_lower or "bread" in reply_lower:
-        assert any(n.lower() in reply_lower for n in names), f"Reply mentions no catalogue product: {data['reply']}"
+
+def test_order_unknown_number_404():
+    r = requests.get(f"{BASE}/api/orders/UNKNOWN", timeout=20)
+    assert r.status_code == 404

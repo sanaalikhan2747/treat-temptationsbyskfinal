@@ -1,59 +1,70 @@
 # Treats & Temptation by SK — PRD
 
 ## Problem Statement
-Build an AI-powered dessert discovery site (not a plain bakery menu) for a home-bakery brand ("Treats & Temptation by SK"). Users answer occasion/mood/people/budget/dietary questions and receive an AI-personalised bake recommendation, can build a mix-and-match box, chat with an AI baker, and hand off orders via WhatsApp.
+AI-powered dessert discovery + custom bake ordering site for home-baker **Sana Khan** (Instagram: @treatsandtemptationbysk). Pakistan-based (WhatsApp +92 322 4112832, PKR). Not a plain menu — customers explore a full menu, get an AI-matched loaf, or build a custom box with ribbon and personalized message, then order on the site.
 
 ## User Personas
-- **Gift-buyer**: Doesn't know what to order for a friend's birthday/anniversary — needs guided help.
-- **Tea-party host**: Wants a warm, homemade spread within a budget.
-- **Craving customer**: Just wants "something sweet" — uses "Surprise Me" or AI Baker Chat.
+- **Gift buyer** — no idea what to order for a birthday/anniversary/Eid; needs guided help.
+- **Tea-party host** — wants a warm homemade spread within budget.
+- **Craving customer** — wants "something sweet"; uses Surprise Me or AI Baker Chat.
+- **Occasion sender** — wants a curated small box with ribbon and a personal note for a friend.
 
 ## Core Requirements (Static)
-1. Dessert Matchmaker — form → AI recommendation (product + one warm sentence).
-2. Build Your Box — pre-set mix (1 loaf, 2 cookies, 2 brownies, 1 cinnamon roll) with live pricing.
-3. Surprise Me — random pick from live catalogue.
-4. Story Behind the Bake — each bake has a short story, not a menu blurb.
-5. AI Baker Chat — chatbot bounded to the real catalogue.
-6. WhatsApp order handoff — cart formatted into wa.me share link.
+1. Dessert Matchmaker — form → AI loaf recommendation (product + one warm sentence).
+2. Full Menu at `/menu` — filterable across loaves, cheesecakes, batches, cookies.
+3. Custom Box Builder at `/build` — flying-item animation, ribbon options, personalized note.
+4. Festive Boxes — 5 one-tap curated pairings.
+5. Save & Share match — sharable `?match=<id>` URL.
+6. AI Baker Chat — bounded to the real catalogue.
+7. On-site checkout at `/checkout` with real order persistence.
+8. WhatsApp order handoff for confirmation & bank-transfer payment details.
 
 ## Implemented (2026-02)
-- FastAPI backend with `/api/products`, `/api/festive-boxes`, `/api/match`, `/api/match/save`, `/api/match/{id}`, `/api/chat`, plus status endpoints.
-- **7-loaf catalogue matching SK's real Instagram menu** (Chocolate Chip Banana Bread with walnut add-on, Apple Cinnamon, Lemon, Coconut, Coffee Walnut Crumble, Double Chocolate, Chocolate Malt) with mood/occasion/price metadata.
-- Deterministic scoring in `/api/match` (mood + occasion + budget + serves fit) → LLM prose bound to the chosen product name, with safety-net fallback if the model drifts.
-- `/api/chat` grounded to catalogue via system prompt; failures return a friendly reply with `ok=false`.
-- **Festive Boxes**: 5 curated boxes (Anniversary, Birthday, Graduation, Eid, Baby Born) each with items and a computed total.
-- **Save & Share**: `/api/match/save` returns a short id → sharable `?match=<id>` URL; on load the frontend restores the match automatically.
-- React frontend: hero, matchmaker form, match result card with Save & Share, festive-boxes section, loaf-mix box builder, stories section, footer.
-- Full cart drawer: add-from-match, add-festive-box, add-builder, quantity +/-, remove, running total, "Order via WhatsApp", clear box.
-- Cart count badge in navbar (`data-testid=cart-count`).
-- AI Baker Chat drawer with loading indicator and visible error banner when backend is down.
-- **Real WhatsApp handoff to +92 322 4112832** on every WhatsApp button.
-- Emergent LLM Key integration (openai gpt-4o-mini).
+- **19-item catalogue** matching Sana Khan's real Instagram menu:
+  - **Loaves (6)**: Lemon 850, Chocolate Chip Banana 900 (+walnut 100), Apple Cinnamon 850, Coffee Walnut Crumble 1200, Coconut 1200, Sugar-Free Dates 1800.
+  - **Cheesecake & Desserts (5)**: NYC 2200, Lotus 2500, Pineapple 1800, Banoffee Pie 2100, Coffee Cake w/ Nutty Brittle 1200.
+  - **Batches (4)**: Brownies 1000/4, Cinnamon Rolls 1400/4, Papparoti Buns 800/4, Éclair 700/3.
+  - **Cookies (4, per piece)**: Chocolate Chip 200, Chocolate Filled 250, Lotus 300, Double Chocolate 300.
+- **Custom-box unit pricing** for small mixes: brownie 275, cinnamon roll 375, papparoti 225, éclair 250, cookies at piece price.
+- **Packaging**: Plain White (Rs 100), White Ribbon (Rs 150), Pink Ribbon (Rs 150).
+- **Pages/routes** via react-router: `/`, `/menu`, `/build`, `/checkout`, `/order/:orderNumber`.
+- **Custom Box Builder** with flying-image animation into the visual box; ribbon renders when selected; personalized message shows as a hanging tag.
+- **Checkout** with form validation (name/phone/address required), delivery date, notes.
+- **Orders persisted** in MongoDB (`db.orders`) with unique `TT######` order number.
+- **Order success page** with formatted WhatsApp handoff pre-filled with every line item + packaging + note + customer info; SK confirms & shares bank details.
+- **Save & Share match** — `?match=<id>` URL, copy-to-clipboard.
+- **AI Baker Chat** grounded to the full 19-item catalogue.
+- **Pink & white theme** matching Sana Khan's brand identity; **logo** displayed as circular stamp on hero image.
+- **Cart** persists in localStorage across routes.
+- Emergent LLM Key (openai gpt-4o-mini).
 
 ## Tech Stack
-- Frontend: React (CRA), Tailwind (not used yet — plain CSS in App.css), axios, lucide-react.
+- Frontend: React + react-router-dom, plain CSS in App.css.
 - Backend: FastAPI, motor (Mongo), emergentintegrations.
 - LLM: Emergent LLM Key.
-
-## Prioritised Backlog
-### P1
-- Wire up a real WhatsApp business number instead of open `wa.me/` share.
-- Real product photography (Instagram scrape was blocked; using Unsplash placeholders).
-- Persist chat sessions across drawer reopen; show session history.
-- "Save my match" — email/share the recommendation.
-
-### P2
-- Order form fallback (name + address) for users without WhatsApp.
-- Admin CRUD for products (currently hard-coded).
-- Testimonials / social proof section.
-- Delivery pincode checker.
+- Payment: Bank transfer via WhatsApp (Stripe unavailable in PK).
 
 ## Deferred / Not Requested
+- Online card payments — Stripe sandbox is `country_not_supported` for PK. User picked bank-transfer via WhatsApp instead.
 - Auth / user accounts.
-- Payments (order handoff is via WhatsApp).
-- Instagram auto-sync (blocked upstream).
+- Admin CRUD for products (currently hard-coded).
+- Instagram auto-sync (upstream blocked).
+
+## Prioritized Backlog
+### P1
+- Real product photography (currently high-quality Unsplash placeholders).
+- Admin product editor page (auth-protected).
+- Order status timeline (pending → confirmed → out for delivery → delivered) with WhatsApp status pushes.
+- SMS/email notifications on order confirm.
+
+### P2
+- Delivery pincode / zone checker.
+- Testimonials / social proof section.
+- Loyalty coupon codes.
+- Voice-driven Baker Chat (whisper).
 
 ## Known Notes for Next Agent
-- Product data is hard-coded in `/app/backend/server.py` (`PRODUCTS`). Frontend fetches them via `/api/products`.
-- Match endpoint injects the chosen product name and a strict "must use this exact name" instruction, plus a post-check that rewrites the explanation if the LLM drifts.
-- No authentication; all endpoints are public.
+- All product data hard-coded in `/app/backend/server.py` under `PRODUCTS`; add `custom_box_unit` on a product to make it available in the Build-a-Box picker.
+- Cart uses composite key `${id}::cbox` vs plain `id` — same product can appear twice with different modes.
+- Stripe is intentionally not integrated; if user opens a PayPro/SafePay merchant account, playbook the integration then.
+- Logo image is a screenshot with Instagram UI chrome; hero uses a tightly-cropped CSS background-image to isolate just the badge. When SK sends a clean logo, swap the URL and remove the `background-size / background-position` fine-tuning in `.logo-stamp`.

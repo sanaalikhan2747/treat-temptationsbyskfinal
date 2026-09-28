@@ -1,0 +1,24 @@
+{
+  "summary": "Iteration 4 — 19-item catalogue, /menu + /build + /checkout + /order routes, order persistence, WhatsApp handoff. Backend: 11/11 pytest tests pass against production preview URL (products count/categories, custom_box_unit whitelist, packaging trio, festive-box hydration, match regression, orders happy path with subtotal=1350/pack=150/total=1500, all order 400/404 error paths). Frontend: Menu page shows 19 cards + 4 category filters (cookie filter narrows to 4), add-to-cart works and increments cart-count. Build page shows exactly 8 picker cards (all items with custom_box_unit), preview-items-total updates to 275 on +1 brownie, pink preview-ribbon appears when pack-pink-ribbon selected, preview-tag reflects build-message. Checkout empty submit shows 3 inline errors, filled submit creates order and navigates to /order/TT###### (verified TT317867). order-whatsapp href starts with https://wa.me/923224112832 with URL-encoded message. Cart persists across /menu -> /build navigation (localStorage tt_cart_v1). AI baker chat replies within 30s.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": ["/app/backend/tests/test_public_api.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py /api/orders correctly excludes MongoDB _id from returned document (via order_doc.pop('_id', None)) and from GET /api/orders/{id} (via projection {'_id':0}).",
+    "server.py order pricing logic correctly branches on custom_box flag: custom_box=True items use custom_box_unit price, non-custom items use full price; 400 raised if custom_box=True on a product without custom_box_unit (verified in tests).",
+    "Pydantic validation on Customer (name/phone/address min-length) and OrderItem (qty 1..99) provides good input hardening; empty items list returns 400 from an explicit check.",
+    "Frontend CartContext uses composite key `${id}::cbox` vs plain id so the same product can coexist in cart as batch + custom-box; verified via successful order for lemon-loaf (whole) + brownie (custom).",
+    "BuildBox: flyToBox animation is fire-and-forget and safely wrapped; page functions correctly if animation is skipped.",
+    "OrderSuccess: WhatsApp message construction correctly URL-encodes with `waLink()` and covers every line item, packaging, note, and total — matches user-chosen bank-transfer-via-WhatsApp flow.",
+    "Nit: Home.jsx is fine but the previous iteration noted App.js was approaching 700 lines — that concern is resolved this iteration since App.js is now a slim 33-line router shell (splitting into Home/Menu/BuildBox/Checkout/OrderSuccess pages)."
+  ],
+  "updated_files": ["/app/backend/tests/test_public_api.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "none required",
+  "seed_data_creation": "During tests a real order was created in MongoDB (order_number TT317867, total Rs. 425 — 1 brownie custom + pink ribbon) plus tests suite creates several 'TEST Buyer' orders. Consider clearing db.orders on next reset.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "test_public_api.py now covers: root, 19-item catalogue by category (loaf 6/cheesecake 5/batch 4/cookie 4), custom_box_unit whitelist (exactly 8 items: 4 batches + 4 cookies with prices 275/375/225/250/200/250/300/300), 3 packaging options with correct ribbon/price, 5 festive boxes with correct totals, match regression (product name in explanation), orders happy path (subtotal 1350 + pack 150 = 1500, ribbon='pink', status='pending_confirmation', order_number pattern TT\\d{6}), 400 on custom_box for non-cbox product, 404 on unknown product, 400 on empty items, 404 on unknown order_number. Frontend Playwright confirmed: /menu (19 cards + filter-cookie hides others + menu-add increments cart-count), /build (8 picker cards, picker-plus/qty/preview-items-total, preview-ribbon on pack-pink-ribbon, preview-tag mirrors build-message), /checkout (empty submit shows 3 inline `.err` validation messages, filled submit navigates to /order/TT###### and clears cart), /order/:orderNumber (order-number, order-total, order-whatsapp href starts wa.me/923224112832), cart persistence via localStorage tt_cart_v1 across route navigation, AI baker chat replies. No regressions found.",
+  "rca of the issue": "N/A — no bugs found this iteration."
+}
