@@ -153,19 +153,19 @@ PACKAGING = [
 FESTIVE_BOXES = [
     {"id": "anniversary-box", "name": "Anniversary Box", "tagline": "Slow, warm and a little bit romantic.",
      "items": [{"product_id": "coffee-walnut-loaf", "qty": 1}, {"product_id": "chocolate-filled-cookie", "qty": 4}],
-     "image": "https://images.unsplash.com/photo-1617118601021-4992c028fe5d?auto=format&fit=crop&w=900&q=85"},
+     "image": "https://res.cloudinary.com/dffsqfwok/image/upload/v1790781186/Bakery_gift_box_product_shoot_2K_20260930201127_tpv8bt.jpg"},
     {"id": "birthday-box", "name": "Birthday Box", "tagline": "The loud, chocolatey kind of joy.",
      "items": [{"product_id": "chocolate-chip-banana", "qty": 1}, {"product_id": "double-chocolate-cookie", "qty": 4}, {"product_id": "brownies-batch", "qty": 1}],
-     "image": "https://images.unsplash.com/photo-1700045530510-6e03007a8f48?auto=format&fit=crop&w=900&q=85"},
+     "image": "https://res.cloudinary.com/dffsqfwok/image/upload/v1790781445/Bakery_product_shoot_for_website_2K_20260930201702_wr1y0v.jpg"},
     {"id": "graduation-box", "name": "Graduation Box", "tagline": "A proud, celebratory afternoon.",
      "items": [{"product_id": "coffee-walnut-loaf", "qty": 1}, {"product_id": "cinnamon-rolls-batch", "qty": 1}],
-     "image": "https://images.unsplash.com/photo-1764385827123-45525c44373c?auto=format&fit=crop&w=900&q=85"},
+     "image": "https://res.cloudinary.com/dffsqfwok/image/upload/v1790781742/Graduation_pastry_gift_box_shoot_2K_20260930202204_uatomr.jpg"},
     {"id": "eid-box", "name": "Eid Box", "tagline": "Sweet, generous and made for sharing.",
      "items": [{"product_id": "coconut-loaf", "qty": 1}, {"product_id": "lotus-cookie", "qty": 4}, {"product_id": "papparoti-batch", "qty": 1}],
-     "image": "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=900&q=85"},
+     "image": "https://res.cloudinary.com/dffsqfwok/image/upload/v1790782194/Eid_dessert_box_product_shoot_2K_20260930202830_gn5gmr.jpg"},
     {"id": "baby-born-box", "name": "Baby Born Box", "tagline": "Gentle, bright and full of good wishes.",
      "items": [{"product_id": "lemon-loaf", "qty": 1}, {"product_id": "cinnamon-rolls-batch", "qty": 1}],
-     "image": "https://images.unsplash.com/photo-1700045530510-6e03007a8f48?auto=format&fit=crop&w=900&q=85"},
+     "image": "https://res.cloudinary.com/dffsqfwok/image/upload/v1790782197/Designing_baby_dessert_gift_box_2K_20260930202937_vsh6nh.jpg"},
 ]
 
 

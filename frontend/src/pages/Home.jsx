@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ArrowRight, Instagram, Link2, MessageCircle, Minus, Plus, ShoppingBag, Sparkles, WandSparkles } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Instagram, Link2, MessageCircle, Minus, Plus, ShoppingBag, Sparkles, WandSparkles } from "lucide-react";
 import { api } from "@/state/api";
 import { useCart } from "@/state/CartContext";
 
@@ -9,6 +9,29 @@ const occasions = [
   "Graduation", "Eid", "Baby born", "Gift", "Just craving something",
 ];
 const moods = ["Chocolate lover", "Fresh & citrusy", "Warm & comforting", "Coffee lover", "Something different"];
+
+const HERO_SLIDES = [
+  {
+    image: "https://res.cloudinary.com/dffsqfwok/image/upload/v1790758951/Commercial_bakery_products_on_ta__2K_20260930140220_ggjrdi.jpg",
+    alt: "Homemade artisanal bakes and loaves",
+  },
+  {
+    image: "https://res.cloudinary.com/dffsqfwok/image/upload/w_900,q_auto,f_auto/v1790760596/Mango_dessert_trays_on_surface_2K_20260930142859_zpcb6w.jpg",
+    alt: "Signature mango dessert trays and cups",
+  },
+  {
+    image: "https://res.cloudinary.com/dffsqfwok/image/upload/v1790778866/WhatsApp_Image_2026-09-30_at_14.22.37.jpeg_2K_20260930193407_k7nfcn.jpg",
+    alt: "Curated festive dessert boxes",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1621994214182-f467e6999dc9?auto=format&fit=crop&w=900&q=85",
+    alt: "Chocolate chip banana bread",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&w=900&q=85",
+    alt: "Freshly glazed cinnamon rolls",
+  },
+];
 
 function slug(x) { return x.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and"); }
 
@@ -26,8 +49,21 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedNote, setSavedNote] = useState("");
+  const [heroSlide, setHeroSlide] = useState(0);
+  const [isHeroPaused, setIsHeroPaused] = useState(false);
   const location = useLocation();
   const { addItem, setCartOpen } = useCart();
+
+  useEffect(() => {
+    if (isHeroPaused) return;
+    const interval = setInterval(() => {
+      setHeroSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [isHeroPaused]);
+
+  const prevSlide = () => setHeroSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  const nextSlide = () => setHeroSlide((prev) => (prev + 1) % HERO_SLIDES.length);
 
   useEffect(() => {
     api.get("/products").then((r) => {
@@ -122,12 +158,63 @@ export default function Home() {
             <Sparkles size={16} /> Baked in small batches, chosen with care
           </div>
         </div>
-        <div className="hero-image">
-          <img
-            src="https://res.cloudinary.com/dffsqfwok/image/upload/v1790758951/Commercial_bakery_products_on_ta__2K_20260930140220_ggjrdi.jpg"
-            alt="Homemade loaf, freshly baked"
-            data-testid="hero-dessert-image"
-          />
+        <div
+          className="hero-image"
+          onMouseEnter={() => setIsHeroPaused(true)}
+          onMouseLeave={() => setIsHeroPaused(false)}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowLeft") prevSlide();
+            if (e.key === "ArrowRight") nextSlide();
+          }}
+          aria-label="Bakery showcase slideshow"
+        >
+          <div className="hero-slides-wrapper">
+            {HERO_SLIDES.map((slide, idx) => (
+              <div
+                key={idx}
+                className={`hero-slide ${idx === heroSlide ? "active" : ""}`}
+                aria-hidden={idx !== heroSlide}
+              >
+                <img
+                  src={slide.image}
+                  alt={slide.alt}
+                  loading={idx === 0 ? "eager" : "lazy"}
+                  data-testid={idx === 0 ? "hero-dessert-image" : undefined}
+                />
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            className="hero-slider-arrow prev"
+            onClick={prevSlide}
+            aria-label="Previous slide"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <button
+            type="button"
+            className="hero-slider-arrow next"
+            onClick={nextSlide}
+            aria-label="Next slide"
+          >
+            <ChevronRight size={18} />
+          </button>
+
+          <div className="hero-slider-dots">
+            {HERO_SLIDES.map((_, idx) => (
+              <button
+                type="button"
+                key={idx}
+                className={`hero-dot ${idx === heroSlide ? "active" : ""}`}
+                onClick={() => setHeroSlide(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+
           <div className="image-stamp logo-stamp">
             <img
               src="https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/qhx8c79m_Screenshot_20260310_144819_Instagram.webp"
