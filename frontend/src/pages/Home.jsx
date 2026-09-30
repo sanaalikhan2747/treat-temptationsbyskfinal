@@ -216,11 +216,6 @@ export default function Home() {
           </div>
 
           <div className="image-stamp logo-stamp">
-            <img
-              src="https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/qhx8c79m_Screenshot_20260310_144819_Instagram.webp"
-              alt="Made with love — Treats & Temptation by Sana Khan"
-              data-testid="hero-logo"
-            />
           </div>
         </div>
       </section>

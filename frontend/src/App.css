@@ -283,17 +283,16 @@ h2 em {
 }
 .image-stamp {
   position: absolute;
-  bottom: -20px;
-  right: -18px;
-  background: var(--orange);
+  bottom: -30px;
+  right: -30px;
   color: #fff;
   border-radius: 50%;
-  width: 122px;
-  height: 122px;
+  width: 150px;
+  height: 150px;
   display: grid;
   place-content: center;
   text-align: center;
-  font: italic 15px/1.1 "Playfair Display";
+  /* font: italic 15px/1.1 "Playfair Display"; */
   transform: rotate(-8deg);
   z-index: 4;
 }
@@ -303,12 +302,12 @@ h2 em {
 .logo-stamp {
   padding: 0;
   overflow: hidden;
-  transform: rotate(-4deg);
+  transform: rotate(14deg);
   box-shadow: 0 12px 28px rgba(209, 107, 143, 0.35);
-  border: 3px solid #fff;
-  background: #fdedf1
-    url("https://customer-assets-rejwkqb3.emergentagent.net/job_bake-moment/artifacts/qhx8c79m_Screenshot_20260310_144819_Instagram.webp")
-    no-repeat center 34% / 200% auto;
+  border: 1px solid #a94566;
+  background: var(--cream)
+    url("https://chatgpt.com/backend-api/estuary/public_content/enc/eyJpZCI6Im1fNmFiZDVmYmYzYjg4ODE5MTg2NWYxNzQ4NmQ3ZTZhMzU6ZmlsZV8wMDAwMDAwMDgyMDA4MjQzYjgxMDQ4ZDliN2I5YWRjNSIsImdpem1vX2lkIjpudWxsLCJ3aWQiOm51bGwsIm9pZCI6bnVsbCwic2lkIjpudWxsLCJjcyI6bnVsbCwiZm4iOm51bGwsImNkIjpudWxsLCJ0cyI6IjIwNzI2IiwicCI6InB5aSIsImNpZCI6IjEiLCJzaWciOiIyMmE0ZmQzMjU3MGExYmMzNDVjNmQxZTlkYjFmMzEwYjdjOWM1Yjk0YzA2YzdkMDNmZTc1NWQyMTE3NTJiYTViIiwidiI6IjAiLCJjZG4iOm51bGwsImNwIjpudWxsLCJtYSI6bnVsbH0=")
+    no-repeat center top / 100% auto;
 }
 .logo-stamp img {
   display: none;
