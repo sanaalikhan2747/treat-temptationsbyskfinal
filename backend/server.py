@@ -31,10 +31,10 @@ api_router = APIRouter(prefix="/api")
 # customer's custom box (small quantities). Items without it are only sold whole/by batch.
 PRODUCTS = [
     # Loaves (whole, ~6-8 people)
-    {"id": "lemon-loaf", "name": "Lemon Loaf", "category": "loaf", "price": 850, "serves": "6–8",
+    {"id": "lemon-loaf", "name": "Mango Trifle Cups", "category": "loaf", "price": 850, "serves": "6–8",
      "serves_min": 6, "serves_max": 8, "unit": "loaf",
      "moods": ["Fresh & citrusy"], "occasions": ["Tea party", "Gift", "Baby born", "Just craving something"],
-     "image": "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?auto=format&fit=crop&w=900&q=85",
+     "image": "https://res.cloudinary.com/dffsqfwok/image/upload/v1790760596/Mango_dessert_trays_on_surface_2K_20260930142859_zpcb6w.jpg",
      "story": "Bright, sunlit slices for the mornings that need a lift and the afternoons that need a smile."},
     {"id": "chocolate-chip-banana", "name": "Chocolate Chip Banana Bread", "category": "loaf", "price": 900,
      "serves": "6–8", "serves_min": 6, "serves_max": 8, "unit": "loaf",
@@ -42,11 +42,11 @@ PRODUCTS = [
      "moods": ["Warm & comforting", "Chocolate lover"], "occasions": ["Tea party", "Family gathering", "Just craving something", "Birthday"],
      "image": "https://images.unsplash.com/photo-1621994214182-f467e6999dc9?auto=format&fit=crop&w=900&q=85",
      "story": "The loaf you slice on a slow Sunday, with chocolate melting into every crumb."},
-    {"id": "apple-cinnamon-loaf", "name": "Apple Cinnamon Loaf", "category": "loaf", "price": 850,
+    {"id": "apple-cinnamon-loaf", "name": "Cinnamon Rolls", "category": "loaf", "price": 850,
      "serves": "6–8", "serves_min": 6, "serves_max": 8, "unit": "loaf",
      "moods": ["Warm & comforting"], "occasions": ["Tea party", "Family gathering", "Anniversary", "Just craving something"],
      "image": "https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&w=900&q=85",
-     "story": "Warm, gentle spice and soft apples — it makes the kitchen smell like a Sunday afternoon."},
+     "story": "Warm, gentle spice and cinnamon — it makes the kitchen smell like a Sunday afternoon."},
     {"id": "coffee-walnut-loaf", "name": "Coffee Bread with Walnut Crumble", "category": "loaf", "price": 1200,
      "serves": "6–8", "serves_min": 6, "serves_max": 8, "unit": "loaf",
      "moods": ["Coffee lover", "Warm & comforting"], "occasions": ["Anniversary", "Family gathering", "Graduation", "Tea party"],

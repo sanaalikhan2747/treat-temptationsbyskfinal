@@ -124,7 +124,7 @@ export default function Home() {
         </div>
         <div className="hero-image">
           <img
-            src="https://images.unsplash.com/photo-1519915028121-7d3463d20b13?auto=format&fit=crop&w=1300&q=85"
+            src="https://res.cloudinary.com/dffsqfwok/image/upload/v1790758951/Commercial_bakery_products_on_ta__2K_20260930140220_ggjrdi.jpg"
             alt="Homemade loaf, freshly baked"
             data-testid="hero-dessert-image"
           />
