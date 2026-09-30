@@ -243,7 +243,7 @@ export default function Home() {
           {boxes.map((box) => (
             <article className="festive-card" key={box.id} data-testid={`festive-${box.id}`}>
               <div className="festive-image">
-                <img src={box.image} alt={box.name} />
+                <img src={box.image} alt={box.name} loading="lazy" referrerPolicy="no-referrer" />
               </div>
               <div className="festive-body">
                 <h3>{box.name}</h3>
@@ -287,11 +287,20 @@ export default function Home() {
         </div>
         <div className="story-grid">
           {loaves.slice(0, 3).map((p) => (
-            <article className="story-card" key={p.id}>
-              <img src={p.image} alt={p.name} />
-              <div>
-                <p className="eyebrow">THE {p.name.toUpperCase()}</p>
-                <p>{p.story}</p>
+            <article className="tile" key={p.id} tabIndex={0}>
+              <div className="image-wrapper">
+                <img src={p.image} alt={p.name} loading="lazy" referrerPolicy="no-referrer" />
+              </div>
+
+              <div className="story-card">
+                <div className="story-eyebrow" title={p.story}>
+                  <span>{p.name.toUpperCase()}</span>
+                  <span className="star">✦</span>
+                </div>
+
+                <div className="story-copy">
+                  “{p.story}”
+                </div>
               </div>
             </article>
           ))}

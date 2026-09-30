@@ -11,15 +11,17 @@ from typing import List, Optional, Literal
 import uuid
 import json
 from datetime import datetime, timezone
-from emergentintegrations.llm.chat import LlmChat, UserMessage, TextDelta, StreamDone
-
+try:
+    from emergentintegrations.llm.chat import LlmChat, UserMessage, TextDelta, StreamDone
+except ImportError:
+    LlmChat = UserMessage = TextDelta = StreamDone = None
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-mongo_url = os.environ['MONGO_URL']
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[os.environ.get('DB_NAME', 'treats_temptations')]
 
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
@@ -34,7 +36,7 @@ PRODUCTS = [
     {"id": "lemon-loaf", "name": "Mango Trifle Cups", "category": "loaf", "price": 850, "serves": "6–8",
      "serves_min": 6, "serves_max": 8, "unit": "loaf",
      "moods": ["Fresh & citrusy"], "occasions": ["Tea party", "Gift", "Baby born", "Just craving something"],
-     "image": "https://res.cloudinary.com/dffsqfwok/image/upload/v1790760596/Mango_dessert_trays_on_surface_2K_20260930142859_zpcb6w.jpg",
+     "image": "https://res.cloudinary.com/dffsqfwok/image/upload/w_900,q_auto,f_auto/v1790760596/Mango_dessert_trays_on_surface_2K_20260930142859_zpcb6w.jpg",
      "story": "Bright, sunlit slices for the mornings that need a lift and the afternoons that need a smile."},
     {"id": "chocolate-chip-banana", "name": "Chocolate Chip Banana Bread", "category": "loaf", "price": 900,
      "serves": "6–8", "serves_min": 6, "serves_max": 8, "unit": "loaf",
@@ -45,7 +47,7 @@ PRODUCTS = [
     {"id": "apple-cinnamon-loaf", "name": "Cinnamon Rolls", "category": "loaf", "price": 850,
      "serves": "6–8", "serves_min": 6, "serves_max": 8, "unit": "loaf",
      "moods": ["Warm & comforting"], "occasions": ["Tea party", "Family gathering", "Anniversary", "Just craving something"],
-     "image": "https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&w=900&q=85",
+     "image": "https://res.cloudinary.com/dffsqfwok/image/upload/v1790778866/WhatsApp_Image_2026-09-30_at_14.22.37.jpeg_2K_20260930193407_k7nfcn.jpg",
      "story": "Warm, gentle spice and cinnamon — it makes the kitchen smell like a Sunday afternoon."},
     {"id": "coffee-walnut-loaf", "name": "Coffee Bread with Walnut Crumble", "category": "loaf", "price": 1200,
      "serves": "6–8", "serves_min": 6, "serves_max": 8, "unit": "loaf",
@@ -274,7 +276,7 @@ def _pick_product(req: MatchRequest):
 
 
 async def ask_baker(prompt: str, session_id: str, system_extra: str = "", full_catalogue: bool = True):
-    key = os.environ["EMERGENT_LLM_KEY"]
+    key = os.environ.get("EMERGENT_LLM_KEY") or os.environ.get("OPENAI_API_KEY")
     catalogue = FULL_CATALOGUE_FOR_AI if full_catalogue else LOAF_CATALOGUE_FOR_AI
     system_message = (
         "You are the warm, concise home baker for Treats & Temptation by SK. "
@@ -284,14 +286,34 @@ async def ask_baker(prompt: str, session_id: str, system_extra: str = "", full_c
     )
     if system_extra:
         system_message += " " + system_extra
-    chat = LlmChat(api_key=key, session_id=session_id, system_message=system_message).with_model("openai", "gpt-4o-mini")
-    text = ""
-    async for event in chat.stream_message(UserMessage(text=prompt)):
-        if isinstance(event, TextDelta):
-            text += event.content
-        elif isinstance(event, StreamDone):
-            break
-    return text.strip()
+
+    if not key:
+        raise ValueError("No LLM API key provided")
+
+    # 1. Native Emergent environment support
+    if LlmChat and os.environ.get("EMERGENT_LLM_KEY"):
+        chat = LlmChat(api_key=key, session_id=session_id, system_message=system_message).with_model("openai", "gpt-4o-mini")
+        text = ""
+        async for event in chat.stream_message(UserMessage(text=prompt)):
+            if isinstance(event, TextDelta):
+                text += event.content
+            elif isinstance(event, StreamDone):
+                break
+        return text.strip()
+
+    # 2. Local / Standard OpenAI fallback
+    from openai import AsyncOpenAI
+    openai_client = AsyncOpenAI(api_key=key)
+    response = await openai_client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=150,
+        temperature=0.7,
+    )
+    return response.choices[0].message.content.strip()
 
 
 # ---------- Routes ----------
