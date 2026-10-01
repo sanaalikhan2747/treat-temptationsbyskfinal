@@ -68,7 +68,7 @@ export default function Home() {
   useEffect(() => {
     api.get("/products").then((r) => {
       setProducts(r.data);
-      setLoaves(r.data.filter((p) => p.category === "loaf"));
+      setLoaves(r.data.filter((p) => p.category === "batch"));
     }).catch(() => {});
     api.get("/festive-boxes").then((r) => setBoxes(r.data)).catch(() => {});
     const params = new URLSearchParams(window.location.search);
@@ -368,7 +368,7 @@ export default function Home() {
           </a>
         </div>
         <div className="story-grid">
-          {loaves.slice(0, 3).map((p) => (
+          {products.slice(0, 3).map((p) => (
             <article className="tile" key={p.id} tabIndex={0}>
               <div className="image-wrapper">
                 <img src={p.image} alt={p.name} loading="lazy" referrerPolicy="no-referrer" />

@@ -98,7 +98,7 @@ footer a {
   font-size: 12px;
 }
 .hero {
-  max-width: 1320px;
+  /* max-width: 1320px; */
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1.05fr;
@@ -183,16 +183,17 @@ h2 em {
 .hero-image:before {
   content: "";
   position: absolute;
-  inset: -13px 13px 13px -13px;
-  border: 1px solid #ecc6d0;
+  inset: -13px;
+  border: 3px solid #ecc6d0;
   z-index: -1;
+  border-radius: 2px;
 }
 .hero-slides-wrapper {
   position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border-radius: 2px;
+  border-radius: 6px;
 }
 .hero-slide {
   position: absolute;
@@ -283,8 +284,8 @@ h2 em {
 }
 .image-stamp {
   position: absolute;
-  bottom: -30px;
-  right: -30px;
+  bottom: -50px;
+  right: -50px;
   color: #fff;
   border-radius: 50%;
   width: 150px;
@@ -301,12 +302,9 @@ h2 em {
 }
 .logo-stamp {
   padding: 0;
-  overflow: hidden;
   transform: rotate(14deg);
-  box-shadow: 0 12px 28px rgba(209, 107, 143, 0.35);
-  border: 1px solid #a94566;
-  background: var(--cream)
-    url("https://chatgpt.com/backend-api/estuary/public_content/enc/eyJpZCI6Im1fNmFiZDVmYmYzYjg4ODE5MTg2NWYxNzQ4NmQ3ZTZhMzU6ZmlsZV8wMDAwMDAwMDgyMDA4MjQzYjgxMDQ4ZDliN2I5YWRjNSIsImdpem1vX2lkIjpudWxsLCJ3aWQiOm51bGwsIm9pZCI6bnVsbCwic2lkIjpudWxsLCJjcyI6bnVsbCwiZm4iOm51bGwsImNkIjpudWxsLCJ0cyI6IjIwNzI2IiwicCI6InB5aSIsImNpZCI6IjEiLCJzaWciOiIyMmE0ZmQzMjU3MGExYmMzNDVjNmQxZTlkYjFmMzEwYjdjOWM1Yjk0YzA2YzdkMDNmZTc1NWQyMTE3NTJiYTViIiwidiI6IjAiLCJjZG4iOm51bGwsImNwIjpudWxsLCJtYSI6bnVsbH0=")
+  border: none;
+  background: url("https://chatgpt.com/backend-api/estuary/public_content/enc/eyJpZCI6Im1fNmFiZDVmYmYzYjg4ODE5MTg2NWYxNzQ4NmQ3ZTZhMzU6ZmlsZV8wMDAwMDAwMDgyMDA4MjQzYjgxMDQ4ZDliN2I5YWRjNSIsImdpem1vX2lkIjpudWxsLCJ3aWQiOm51bGwsIm9pZCI6bnVsbCwic2lkIjpudWxsLCJjcyI6bnVsbCwiZm4iOm51bGwsImNkIjpudWxsLCJ0cyI6IjIwNzI2IiwicCI6InB5aSIsImNpZCI6IjEiLCJzaWciOiIyMmE0ZmQzMjU3MGExYmMzNDVjNmQxZTlkYjFmMzEwYjdjOWM1Yjk0YzA2YzdkMDNmZTc1NWQyMTE3NTJiYTViIiwidiI6IjAiLCJjZG4iOm51bGwsImNwIjpudWxsLCJtYSI6bnVsbH0=")
     no-repeat center top / 100% auto;
 }
 .logo-stamp img {
