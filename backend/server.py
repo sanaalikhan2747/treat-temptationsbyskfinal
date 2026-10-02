@@ -252,7 +252,7 @@ PRODUCTS = [
         "custom_box_unit": 400,
         "moods": ["Warm & comforting"],
         "occasions": ["Tea party", "Family gathering", "Baby born", "Gift"],
-        "image": "https://images.unsplash.com/photo-1694632288834-17d86b340745?auto=format&fit=crop&w=900&q=85",
+        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790941291/IMG-20261002-WA0200.jpg",
         "story": "Soft brioche spirals warmly spiced with Ceylon cinnamon. Choose any ratio of Chocolate and Vanilla glaze.",
     },
     {
