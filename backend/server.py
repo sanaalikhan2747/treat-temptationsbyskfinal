@@ -151,7 +151,12 @@ PRODUCTS = [
         "serves_min": 4,
         "serves_max": 4,
         "moods": ["Something different", "Warm & comforting"],
-        "occasions": ["Tea party", "Gift", "Family gathering", "Just craving something"],
+        "occasions": [
+            "Tea party",
+            "Gift",
+            "Family gathering",
+            "Just craving something",
+        ],
         "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790870245/image_33e1256e.jpg",
         "story": "Four adorable mini loaves — mix any combination of Lemon, Coconut, Coffee Walnut, or Double Chocolate.",
     },
@@ -243,7 +248,7 @@ PRODUCTS = [
         "unit": "pack of 4",
         "batch_size": 4,
         "pack_size": 4,
-        "flavors": ["Chocolate", "Vanilla"],
+        "flavors": ["Chocolate", "Creme Cheese"],
         "custom_box_unit": 400,
         "moods": ["Warm & comforting"],
         "occasions": ["Tea party", "Family gathering", "Baby born", "Gift"],
@@ -807,7 +812,9 @@ async def save_match(payload: SaveMatchRequest):
     try:
         await db.saved_matches.insert_one(match_doc)
     except Exception as e:
-        logging.getLogger(__name__).warning("MongoDB save_match fallback to in-memory: %s", e)
+        logging.getLogger(__name__).warning(
+            "MongoDB save_match fallback to in-memory: %s", e
+        )
     return {"id": match_id}
 
 
@@ -967,7 +974,9 @@ async def create_order(payload: CreateOrderRequest):
     try:
         await db.orders.insert_one(order_doc)
     except Exception as e:
-        logging.getLogger(__name__).warning("MongoDB create_order fallback to in-memory: %s", e)
+        logging.getLogger(__name__).warning(
+            "MongoDB create_order fallback to in-memory: %s", e
+        )
     order_doc.pop("_id", None)
     return order_doc
 

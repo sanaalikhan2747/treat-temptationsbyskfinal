@@ -8,7 +8,6 @@ export default function Nav({ onOpenChat }) {
     <nav className="nav">
       <Link to="/" className="brand" data-testid="brand-home">
         <img src="/logo.svg" alt="Treats & Temptation by SK" className="brand-logo" />
-        <span className="brand-text">Treats &<br /><b>Temptation</b></span>
       </Link>
       <div className="nav-links">
         <NavLink to="/menu" data-testid="nav-menu">Menu</NavLink>
