@@ -4,6 +4,21 @@ const CartContext = createContext(null);
 
 const STORAGE_KEY = "tt_cart_v1";
 
+export function getItemKey(item) {
+  if (!item) return "";
+  if (item.cartKey) return item.cartKey;
+  if (item.custom_box) return `${item.id}::cbox`;
+  if (item.pack_selection) {
+    const sorted = Object.entries(item.pack_selection)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([k, v]) => `${k}:${v}`)
+      .join("|");
+    return `${item.id}::pack::${sorted}`;
+  }
+  if (item.selected_variant) return `${item.id}::var::${item.selected_variant}`;
+  return item.id;
+}
+
 function loadInitial() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -22,23 +37,23 @@ export function CartProvider({ children }) {
 
   const addItem = (item) => {
     setState((s) => {
-      const key = item.custom_box ? `${item.id}::cbox` : item.id;
-      const existing = s.items.find((i) => (i.custom_box ? `${i.id}::cbox` : i.id) === key);
+      const key = getItemKey(item);
+      const existing = s.items.find((i) => getItemKey(i) === key);
       const nextItems = existing
-        ? s.items.map((i) => ((i.custom_box ? `${i.id}::cbox` : i.id) === key ? { ...i, qty: i.qty + (item.qty || 1) } : i))
-        : [...s.items, { ...item, qty: item.qty || 1 }];
+        ? s.items.map((i) => (getItemKey(i) === key ? { ...i, qty: i.qty + (item.qty || 1) } : i))
+        : [...s.items, { ...item, cartKey: key, qty: item.qty || 1 }];
       return { ...s, items: nextItems };
     });
   };
 
   const setQty = (key, qty) => setState((s) => ({
     ...s,
-    items: s.items.map((i) => ((i.custom_box ? `${i.id}::cbox` : i.id) === key ? { ...i, qty: Math.max(1, qty) } : i)),
+    items: s.items.map((i) => (getItemKey(i) === key ? { ...i, qty: Math.max(1, qty) } : i)),
   }));
 
   const removeItem = (key) => setState((s) => ({
     ...s,
-    items: s.items.filter((i) => (i.custom_box ? `${i.id}::cbox` : i.id) !== key),
+    items: s.items.filter((i) => getItemKey(i) !== key && i.id !== key),
   }));
 
   const clearCart = () => setState({ items: [], packagingId: null, message: "" });

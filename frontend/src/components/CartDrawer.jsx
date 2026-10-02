@@ -1,13 +1,11 @@
 import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "@/state/CartContext";
+import { useCart, getItemKey } from "@/state/CartContext";
 
 export default function CartDrawer() {
   const { cartOpen, setCartOpen, items, cartCount, subtotal, setQty, removeItem, clearCart } = useCart();
   const navigate = useNavigate();
   if (!cartOpen) return null;
-
-  const keyOf = (i) => (i.custom_box ? `${i.id}::cbox` : i.id);
 
   return (
     <>
@@ -30,17 +28,30 @@ export default function CartDrawer() {
             </div>
           ) : (
             items.map((i) => {
-              const k = keyOf(i);
+              const k = getItemKey(i);
               return (
                 <div className="cart-row" key={k} data-testid={`cart-item-${k}`}>
                   <img src={i.image} alt={i.name} />
                   <div className="cart-row-info">
                     <b>{i.name}{i.custom_box ? " (single)" : ""}</b>
+
+                    {i.selected_variant && (
+                      <span className="cart-item-spec" data-testid={`cart-variant-${k}`}>
+                        Topping: {i.selected_variant}
+                      </span>
+                    )}
+
+                    {i.pack_selection && (
+                      <span className="cart-item-spec" data-testid={`cart-pack-${k}`}>
+                        {Object.entries(i.pack_selection).map(([fl, c]) => `${c}× ${fl}`).join(", ")}
+                      </span>
+                    )}
+
                     <small>Rs. {i.price.toLocaleString()} each</small>
                     <div className="cart-qty">
-                      <button onClick={() => setQty(k, i.qty - 1)} data-testid={`cart-qty-minus-${k}`}><Minus size={13} /></button>
+                      <button onClick={() => setQty(k, i.qty - 1)} data-testid={`cart-qty-minus-${k}`} aria-label="Decrease quantity"><Minus size={13} /></button>
                       <span data-testid={`cart-qty-${k}`}>{i.qty}</span>
-                      <button onClick={() => setQty(k, i.qty + 1)} data-testid={`cart-qty-plus-${k}`}><Plus size={13} /></button>
+                      <button onClick={() => setQty(k, i.qty + 1)} data-testid={`cart-qty-plus-${k}`} aria-label="Increase quantity"><Plus size={13} /></button>
                     </div>
                   </div>
                   <div className="cart-row-right">

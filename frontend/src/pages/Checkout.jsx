@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck, Clock } from "lucide-react";
 import { api } from "@/state/api";
-import { useCart } from "@/state/CartContext";
+import { useCart, getItemKey } from "@/state/CartContext";
 
 const PACK_LABELS = {
   "clear-box": "Clear Plastic Box with Pink Ribbon",
@@ -39,6 +39,13 @@ export default function Checkout() {
   const packPrice = pack?.price || 0;
   const total = subtotal + packPrice;
 
+  // Minimum delivery date is tomorrow (24 hours notice)
+  const minDeliveryDate = useMemo(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split("T")[0];
+  }, []);
+
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
   const validate = () => {
@@ -46,6 +53,14 @@ export default function Checkout() {
     if (!form.name.trim()) e.name = "We need a name for the order.";
     if (!form.phone.trim() || form.phone.trim().length < 6) e.phone = "Please share a phone number SK can reach.";
     if (!form.address.trim() || form.address.trim().length < 4) e.address = "Please share the delivery address.";
+    if (form.delivery_date) {
+      const selected = new Date(form.delivery_date + "T00:00:00");
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (selected <= today) {
+        e.delivery_date = "Freshly prepared & baked to order — please select a date at least 24 hours in advance.";
+      }
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -57,7 +72,13 @@ export default function Checkout() {
     setSubmitting(true);
     try {
       const payload = {
-        items: items.map((i) => ({ product_id: i.id, qty: i.qty, custom_box: !!i.custom_box })),
+        items: items.map((i) => ({
+          product_id: i.id,
+          qty: i.qty,
+          custom_box: !!i.custom_box,
+          selected_variant: i.selected_variant || null,
+          pack_selection: i.pack_selection || null,
+        })),
         packaging_id: packagingId || null,
         personalized_message: message || null,
         customer: {
@@ -99,6 +120,12 @@ export default function Checkout() {
         <h1>Almost there.<br /><em>Just the details.</em></h1>
       </header>
 
+      {/* 24 Hours Notice Alert */}
+      <div className="checkout-notice-callout">
+        <Clock size={16} />
+        <span><strong>24 Hours Notice Required</strong>: SK prepares and bakes every item fresh to order.</span>
+      </div>
+
       <div className="checkout-layout">
         <div className="checkout-form">
           <h2 className="section-h">Where should it go?</h2>
@@ -119,8 +146,15 @@ export default function Checkout() {
               {errors.address && <small className="err">{errors.address}</small>}
             </div>
             <div className="field">
-              <label>Delivery date</label>
-              <input type="date" value={form.delivery_date} onChange={(e) => update("delivery_date", e.target.value)} data-testid="checkout-date" />
+              <label>Delivery date (min. 24 hours notice)</label>
+              <input
+                type="date"
+                min={minDeliveryDate}
+                value={form.delivery_date}
+                onChange={(e) => update("delivery_date", e.target.value)}
+                data-testid="checkout-date"
+              />
+              {errors.delivery_date && <small className="err">{errors.delivery_date}</small>}
             </div>
             <div className="field">
               <label>Email (optional)</label>
@@ -171,16 +205,27 @@ export default function Checkout() {
 
         <aside className="checkout-summary">
           <p className="eyebrow">ORDER SUMMARY</p>
-          {items.map((i) => (
-            <div className="summary-row" key={(i.custom_box ? "c-" : "") + i.id}>
-              <img src={i.image} alt={i.name} />
-              <div>
-                <b>{i.qty}× {i.name}{i.custom_box ? " (single)" : ""}</b>
-                <small>Rs. {i.price.toLocaleString()} each</small>
+          {items.map((i) => {
+            const k = getItemKey(i);
+            return (
+              <div className="summary-row" key={k}>
+                <img src={i.image} alt={i.name} />
+                <div>
+                  <b>{i.qty}× {i.name}{i.custom_box ? " (single)" : ""}</b>
+                  {i.selected_variant && (
+                    <span className="summary-spec">Topping: {i.selected_variant}</span>
+                  )}
+                  {i.pack_selection && (
+                    <span className="summary-spec">
+                      {Object.entries(i.pack_selection).map(([fl, c]) => `${c}× ${fl}`).join(", ")}
+                    </span>
+                  )}
+                  <small>Rs. {i.price.toLocaleString()} each</small>
+                </div>
+                <strong>Rs. {(i.qty * i.price).toLocaleString()}</strong>
               </div>
-              <strong>Rs. {(i.qty * i.price).toLocaleString()}</strong>
-            </div>
-          ))}
+            );
+          })}
           <div className="summary-line"><span>Subtotal</span><b data-testid="summary-subtotal">Rs. {subtotal.toLocaleString()}</b></div>
           {pack && <div className="summary-line"><span>{pack.name}</span><b data-testid="summary-pack">Rs. {pack.price}</b></div>}
           <div className="summary-line total"><span>Total</span><b data-testid="summary-total">Rs. {total.toLocaleString()}</b></div>

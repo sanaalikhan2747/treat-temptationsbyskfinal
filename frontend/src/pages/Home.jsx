@@ -68,7 +68,7 @@ export default function Home() {
   useEffect(() => {
     api.get("/products").then((r) => {
       setProducts(r.data);
-      setLoaves(r.data.filter((p) => p.category === "batch"));
+      setLoaves(r.data.filter((p) => p.category === "loaf"));
     }).catch(() => {});
     api.get("/festive-boxes").then((r) => setBoxes(r.data)).catch(() => {});
     const params = new URLSearchParams(window.location.search);

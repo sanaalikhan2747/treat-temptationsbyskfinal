@@ -14,7 +14,21 @@ export default function OrderSuccess() {
   }, [orderNumber]);
 
   const waMessage = order && (() => {
-    const lines = order.items.map((i) => `• ${i.qty}× ${i.name}${i.custom_box ? " (single)" : ""} — Rs. ${i.line_total.toLocaleString()}`).join("\n");
+    const lines = order.items.map((i) => {
+      let line = `• ${i.qty}× ${i.name}${i.custom_box ? " (single)" : ""}`;
+      if (i.selected_variant) {
+        line += ` [Topping: ${i.selected_variant}]`;
+      }
+      if (i.pack_selection) {
+        const packSummary = Object.entries(i.pack_selection)
+          .map(([fl, c]) => `${c}× ${fl}`)
+          .join(", ");
+        line += ` [${packSummary}]`;
+      }
+      line += ` — Rs. ${i.line_total.toLocaleString()}`;
+      return line;
+    }).join("\n");
+
     const parts = [
       `Hello Treats & Temptation by SK!`,
       `New order ${order.order_number}`,
@@ -76,11 +90,19 @@ export default function OrderSuccess() {
 
       <div className="success-summary">
         <h3>Order summary</h3>
-        {order.items.map((i) => (
-          <div className="summary-row plain" key={(i.custom_box ? "c-" : "") + i.product_id}>
+        {order.items.map((i, idx) => (
+          <div className="summary-row plain" key={(i.custom_box ? "c-" : "") + i.product_id + "-" + idx}>
             <img src={i.image} alt={i.name} />
             <div>
               <b>{i.qty}× {i.name}{i.custom_box ? " (single)" : ""}</b>
+              {i.selected_variant && (
+                <span className="summary-spec">Topping: {i.selected_variant}</span>
+              )}
+              {i.pack_selection && (
+                <span className="summary-spec">
+                  {Object.entries(i.pack_selection).map(([fl, c]) => `${c}× ${fl}`).join(", ")}
+                </span>
+              )}
               <small>Rs. {i.unit_price.toLocaleString()} each</small>
             </div>
             <strong>Rs. {i.line_total.toLocaleString()}</strong>
@@ -99,8 +121,6 @@ export default function OrderSuccess() {
           {order.customer.delivery_date && <span>Delivery: {order.customer.delivery_date}</span>}
         </div>
       </div>
-
-      <Link to="/" className="preview-link">← back to home</Link>
     </div>
   );
 }

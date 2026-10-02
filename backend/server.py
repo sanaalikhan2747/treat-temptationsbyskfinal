@@ -38,47 +38,13 @@ api_router = APIRouter(prefix="/api")
 # Whole-menu items. `custom_box_unit` (optional) = per-piece price when included in a
 # customer's custom box (small quantities). Items without it are only sold whole/by batch.
 PRODUCTS = [
-    # Loaves (whole, ~6-8 people)
-    {
-        "id": "mango-trifle",
-        "name": "Mango Trifle Cups",
-        "category": "batch",
-        "price": 350,
-        "serves": "1",
-        "serves_min": 1,
-        "serves_max": 1,
-        "unit": "cup",
-        "moods": ["Fresh & creamy"],
-        "occasions": ["Tea party", "Gift", "Baby born", "Just craving something"],
-        "image": "https://res.cloudinary.com/dffsqfwok/image/upload/w_900,q_auto,f_auto/v1790760596/Mango_dessert_trays_on_surface_2K_20260930142859_zpcb6w.jpg",
-        "story": "Bright, sunlit slices for the mornings that need a lift and the afternoons that need a smile.",
-    },
-    {
-        "id": "chocolate-chip-banana",
-        "name": "Chocolate Chip Banana Bread",
-        "category": "loaf",
-        "price": 900,
-        "serves": "6–8",
-        "serves_min": 6,
-        "serves_max": 8,
-        "unit": "loaf",
-        "addons": [{"name": "Walnuts", "price": 100}],
-        "moods": ["Warm & comforting", "Chocolate lover"],
-        "occasions": [
-            "Tea party",
-            "Family gathering",
-            "Just craving something",
-            "Birthday",
-        ],
-        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790870752/image_6ac914dd.jpg",
-        "story": "The loaf you slice on a slow Sunday, with chocolate melting into every crumb.",
-    },
+    # --- LOAVES (Serves 5–6) ---
     {
         "id": "apple-cinnamon-loaf",
         "name": "Apple Cinnamon Loaf",
         "category": "loaf",
         "price": 950,
-        "serves": "5-6",
+        "serves": "5–6",
         "serves_min": 5,
         "serves_max": 6,
         "unit": "loaf",
@@ -93,18 +59,43 @@ PRODUCTS = [
         "story": "Warm, gentle spice and cinnamon — it makes the kitchen smell like a Sunday afternoon.",
     },
     {
-        "id": "coffee-walnut-loaf",
-        "name": "Coffee Bread with Walnut Crumble",
+        "id": "chocolate-chip-banana",
+        "name": "Choco Chip Banana Bread",
         "category": "loaf",
         "price": 1200,
         "serves": "5–6",
         "serves_min": 5,
         "serves_max": 6,
         "unit": "loaf",
-        "moods": ["Coffee lover", "Warm & comforting"],
-        "occasions": ["Anniversary", "Family gathering", "Graduation", "Tea party"],
-        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790869322/image_6aeade9c_1.jpg",
-        "story": "For the ones who take their afternoons with a strong cup and a slower conversation.",
+        "addons": [{"name": "Walnuts", "price": 100}],
+        "moods": ["Warm & comforting", "Chocolate lover"],
+        "occasions": [
+            "Tea party",
+            "Family gathering",
+            "Just craving something",
+            "Birthday",
+        ],
+        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790870752/image_6ac914dd.jpg",
+        "story": "The loaf you slice on a slow Sunday, with chocolate melting into every crumb.",
+    },
+    {
+        "id": "lemon-loaf",
+        "name": "Lemon Loaf",
+        "category": "loaf",
+        "price": 1200,
+        "serves": "5–6",
+        "serves_min": 5,
+        "serves_max": 6,
+        "unit": "loaf",
+        "moods": ["Fresh & citrusy", "Warm & comforting"],
+        "occasions": [
+            "Tea party",
+            "Gift",
+            "Family gathering",
+            "Just craving something",
+        ],
+        "image": "https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&w=900&q=85",
+        "story": "Bright lemon zest folded into a tender crumb and drizzled with a sweet citrus glaze.",
     },
     {
         "id": "coconut-loaf",
@@ -121,11 +112,56 @@ PRODUCTS = [
         "story": "Toasted coconut, soft crumb, quiet luxury — the loaf that surprises everyone at the table.",
     },
     {
+        "id": "coffee-walnut-loaf",
+        "name": "Coffee Bread with Walnut Crumble",
+        "category": "loaf",
+        "price": 1200,
+        "serves": "5–6",
+        "serves_min": 5,
+        "serves_max": 6,
+        "unit": "loaf",
+        "moods": ["Coffee lover", "Warm & comforting"],
+        "occasions": ["Anniversary", "Family gathering", "Graduation", "Tea party"],
+        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790869322/image_6aeade9c_1.jpg",
+        "story": "For the ones who take their afternoons with a strong cup and a slower conversation.",
+    },
+    {
+        "id": "double-chocolate-loaf",
+        "name": "Double Chocolate Loaf",
+        "category": "loaf",
+        "price": 1800,
+        "serves": "5–6",
+        "serves_min": 5,
+        "serves_max": 6,
+        "unit": "loaf",
+        "moods": ["Chocolate lover", "Rich & indulgent"],
+        "occasions": ["Birthday", "Gift", "Family gathering", "Just craving something"],
+        "image": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=900&q=85",
+        "story": "Deep, velvety cocoa crumb studded with molten chocolate chunks for the true devotee.",
+    },
+    {
+        "id": "mini-loaves-batch",
+        "name": "Mini Loaves (Pack of 4)",
+        "category": "loaf",
+        "price": 2000,
+        "unit": "pack of 4",
+        "pack_size": 4,
+        "flavors": ["Lemon", "Coconut", "Coffee Walnut", "Double Chocolate"],
+        "serves": "4",
+        "serves_min": 4,
+        "serves_max": 4,
+        "moods": ["Something different", "Warm & comforting"],
+        "occasions": ["Tea party", "Gift", "Family gathering", "Just craving something"],
+        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790870245/image_33e1256e.jpg",
+        "story": "Four adorable mini loaves — mix any combination of Lemon, Coconut, Coffee Walnut, or Double Chocolate.",
+    },
+    # --- HEALTHY RANGE ---
+    {
         "id": "sugar-free-dates",
         "name": "Sugar-Free Dates Loaf",
         "category": "loaf",
         "price": 1800,
-        "serves": "5-6",
+        "serves": "5–6",
         "serves_min": 5,
         "serves_max": 6,
         "unit": "loaf",
@@ -134,145 +170,175 @@ PRODUCTS = [
         "moods": ["Warm & comforting", "Something different"],
         "occasions": ["Gift", "Family gathering", "Just craving something"],
         "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790869786/image_8402ea07.jpg",
-        "story": "Naturally sweet, deeply nutty — the loaf you bring for the person watching their sugar.",
-    },
-    # Cheesecakes & Desserts (1lb whole)
-    {
-        "id": "nyc-cheesecake",
-        "name": "New York Cheesecake",
-        "category": "cheesecake",
-        "price": 2200,
-        "unit": "1 lb",
-        "serves": "6–8",
-        "serves_min": 6,
-        "serves_max": 8,
-        "variants": ["Strawberry Sauce", "Lemon Sauce"],
-        "moods": ["Fresh & citrusy", "Something different"],
-        "occasions": ["Anniversary", "Birthday", "Gift"],
-        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790867632/IMG-20250913-WA0191.jpg",
-        "story": "Slow-baked, gently vanilla, and quietly show-stopping.",
+        "story": "Naturally sweet with Arabian dates and walnuts — the loaf you bring for mindful indulgence.",
     },
     {
-        "id": "pineapple-cheesecake",
-        "name": "Pineapple Cheesecake Dessert Box",
-        "category": "cheesecake",
-        "price": 1800,
-        "unit": "1 lb",
-        "serves": "6–8",
-        "serves_min": 6,
-        "serves_max": 8,
-        "moods": ["Fresh & citrusy", "Something different"],
-        "occasions": ["Tea party", "Gift", "Family gathering"],
-        "image": "https://images.unsplash.com/photo-1587411768638-ec71f8e33b78?auto=format&fit=crop&w=900&q=85",
-        "story": "Bright pineapple against a soft cheesecake — a hot-weather kind of joy.",
-    },
-    {
-        "id": "banoffee-pie",
-        "name": "Banoffee Pie",
-        "category": "cheesecake",
-        "price": 2100,
-        "unit": "1 pie",
-        "serves": "6–8",
-        "serves_min": 6,
-        "serves_max": 8,
-        "moods": ["Warm & comforting", "Chocolate lover"],
-        "occasions": ["Family gathering", "Anniversary", "Gift"],
-        "image": "https://images.unsplash.com/photo-1568827999250-3f6afff96e66?auto=format&fit=crop&w=900&q=85",
-        "story": "Toffee, banana and cream — the dessert your childhood is asking for.",
-    },
-    {
-        "id": "coffee-cake-nutty",
-        "name": "Coffee Cake with Nutty Brittle",
-        "category": "cheesecake",
+        "id": "oat-flour-banana-bread",
+        "name": "Oat Flour Choco Chip Banana Bread",
+        "category": "loaf",
         "price": 1200,
-        "unit": "1 lb",
-        "serves": "5-6",
+        "serves": "5–6",
         "serves_min": 5,
         "serves_max": 6,
-        "moods": ["Coffee lover"],
-        "occasions": ["Tea party", "Anniversary", "Graduation"],
-        "image": "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=900&q=85",
-        "story": "Coffee, brown butter, a shard of nutty brittle — grown-up in the best way.",
+        "unit": "loaf",
+        "healthy": True,
+        "note": "Wholesome oat flour & dark chocolate",
+        "moods": ["Warm & comforting", "Chocolate lover"],
+        "occasions": ["Tea party", "Family gathering", "Just craving something"],
+        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790870752/image_6ac914dd.jpg",
+        "story": "Wholesome oat flour, ripe sweet bananas, and rich chocolate chips baked to golden perfection.",
     },
-    # Batches
     {
-        "id": "chocolate-trifle",
-        "name": "Chocolate Trifle Cups",
+        "id": "flourless-brownies",
+        "name": "Flourless Brownies (Box of 4)",
         "category": "batch",
-        "price": 450,
-        "serves": "1",
-        "serves_min": 1,
-        "serves_max": 1,
-        "unit": "cup",
-        "occasions": ["Tea party", "Gift", "Baby born", "Just craving something"],
-        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790867380/ChatGPT_Image_Jun_13_2026_12_23_46_AM.png",
-        "moods": ["Rich & indulgent", "Fudgy & chocolatey", "Sweet & comforting"],
-        "story": "Layers of rich chocolate cake, creamy indulgence, and pure chocolate comfort in every spoonful."
+        "price": 1200,
+        "unit": "box of 4",
+        "batch_size": 4,
+        "pack_size": 4,
+        "flavors": ["Flourless Fudgy"],
+        "custom_box_unit": 300,
+        "healthy": True,
+        "note": "Gluten-free & intensely chocolatey",
+        "moods": ["Chocolate lover", "Rich & indulgent"],
+        "occasions": ["Gift", "Birthday", "Just craving something"],
+        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790867082/image_89afef93.jpg",
+        "story": "Incredibly fudgy and rich without a speck of flour — gluten-friendly comfort at its finest.",
     },
+    {
+        "id": "oat-flour-cookie",
+        "name": "Oat Flour Chocolate Chip Cookie",
+        "category": "cookie",
+        "price": 400,
+        "unit": "piece",
+        "custom_box_unit": 400,
+        "healthy": True,
+        "note": "Nutrient-rich & hearty crunch",
+        "moods": ["Warm & comforting", "Chocolate lover"],
+        "occasions": ["Gift", "Just craving something"],
+        "image": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=85",
+        "story": "Hearty rolled oat flour studded with melted chocolate chips — crisp edges with a soft, chewy center.",
+    },
+    # --- BROWNIES & BAKES ---
     {
         "id": "brownies-batch",
-        "name": "Brownies",
+        "name": "Brownies (Box of 4)",
         "category": "batch",
-        "price": 1000,
-        "unit": "batch of 4",
+        "price": 1200,
+        "unit": "box of 4",
         "batch_size": 4,
-        "custom_box_unit": 275,
+        "pack_size": 4,
+        "flavors": ["Classic Fudgy", "Walnut Fudge", "Flourless"],
+        "custom_box_unit": 300,
         "moods": ["Chocolate lover"],
         "occasions": ["Gift", "Just craving something", "Birthday"],
         "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790867082/image_89afef93.jpg",
-        "story": "Dense, fudgy and gone before you remember to save one for later.",
+        "story": "Dense, crinkly-topped and intensely fudgy. Pick any mix of Classic, Walnut Fudge, and Flourless.",
     },
     {
         "id": "cinnamon-rolls-batch",
         "name": "Cinnamon Rolls (Pack of 4)",
         "category": "batch",
         "price": 1600,
-        "unit": "batch of 4",
-        "batch_size": 1,
-        "custom_box_unit": 0,
+        "unit": "pack of 4",
+        "batch_size": 4,
+        "pack_size": 4,
+        "flavors": ["Chocolate", "Vanilla"],
+        "custom_box_unit": 400,
         "moods": ["Warm & comforting"],
-        "occasions": ["Tea party", "Family gathering", "Baby born"],
+        "occasions": ["Tea party", "Family gathering", "Baby born", "Gift"],
         "image": "https://images.unsplash.com/photo-1694632288834-17d86b340745?auto=format&fit=crop&w=900&q=85",
-        "story": "The box that makes an ordinary afternoon smell like a Sunday morning.",
+        "story": "Soft brioche spirals warmly spiced with Ceylon cinnamon. Choose any ratio of Chocolate and Vanilla glaze.",
     },
     {
         "id": "papparoti-batch",
-        "name": "Papparoti Buns",
+        "name": "Papparoti Buns (Box of 4)",
         "category": "batch",
         "price": 1200,
-        "unit": "batch of 4",
+        "unit": "box of 4",
         "batch_size": 4,
-        "custom_box_unit": 225,
+        "pack_size": 4,
+        "flavors": ["Classic Coffee Crust"],
+        "custom_box_unit": 300,
         "moods": ["Coffee lover", "Warm & comforting"],
         "occasions": ["Tea party", "Just craving something"],
         "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790938012/IMG-20261002-WA0137.jpg",
-        "story": "Soft buns with a crackly coffee crust — best warm, with a strong cup.",
+        "story": "Golden, buttery buns blanketed under a crisp, fragrant coffee caramel crust.",
+    },
+    # --- DESSERT CUPS ---
+    {
+        "id": "mango-trifle",
+        "name": "Mango Trifle Cup",
+        "category": "batch",
+        "price": 350,
+        "serves": "1",
+        "serves_min": 1,
+        "serves_max": 1,
+        "unit": "cup",
+        "custom_box_unit": 350,
+        "moods": ["Fresh & creamy"],
+        "occasions": ["Tea party", "Gift", "Baby born", "Just craving something"],
+        "image": "https://res.cloudinary.com/dffsqfwok/image/upload/w_900,q_auto,f_auto/v1790760596/Mango_dessert_trays_on_surface_2K_20260930142859_zpcb6w.jpg",
+        "story": "Layers of moist sponge, fresh sweet mango puree, and delicate velvety custard cream.",
+    },
+    {
+        "id": "chocolate-trifle",
+        "name": "Chocolate Trifle Cup",
+        "category": "batch",
+        "price": 400,
+        "serves": "1",
+        "serves_min": 1,
+        "serves_max": 1,
+        "unit": "cup",
+        "custom_box_unit": 400,
+        "moods": ["Rich & indulgent", "Chocolate lover"],
+        "occasions": ["Tea party", "Gift", "Baby born", "Just craving something"],
+        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790867380/ChatGPT_Image_Jun_13_2026_12_23_46_AM.png",
+        "story": "Layers of rich chocolate sponge, silky mousse, and chocolate shavings in every spoonful.",
     },
     {
         "id": "malt-cake",
         "name": "Malt Cake Cup",
-        "category": "cup",
-        "price":400,
+        "category": "batch",
+        "price": 400,
+        "serves": "1",
+        "serves_min": 1,
+        "serves_max": 1,
         "unit": "cup",
-        "batch_size": 1,
         "custom_box_unit": 400,
         "moods": ["Chocolate lover", "Something different"],
         "occasions": ["Gift", "Just craving something"],
         "image": "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?auto=format&fit=crop&w=900&q=85",
-        "story": "The chocolate-cream classic, tucked into a treat-sized box.",
+        "story": "Old-fashioned malted chocolate cake topped with a fluffy malt glaze in a cute individual cup.",
     },
-    # Cookies (per piece)
+    {
+        "id": "dessert-cups-pack-4",
+        "name": "Dessert Cups (Pack of 4)",
+        "category": "batch",
+        "price": 1500,
+        "unit": "pack of 4",
+        "pack_size": 4,
+        "flavors": ["Mango Trifle", "Chocolate Trifle", "Malt Cake"],
+        "serves": "4",
+        "serves_min": 4,
+        "serves_max": 4,
+        "moods": ["Fresh & creamy", "Chocolate lover"],
+        "occasions": ["Tea party", "Gift", "Family gathering"],
+        "image": "https://res.cloudinary.com/dffsqfwok/image/upload/w_900,q_auto,f_auto/v1790760596/Mango_dessert_trays_on_surface_2K_20260930142859_zpcb6w.jpg",
+        "story": "Four individual dessert cups — mix and match Mango Trifle, Chocolate Trifle, or Malt Cake in any combination.",
+    },
+    # --- COOKIES ---
     {
         "id": "chocolate-chip-cookie",
         "name": "Chocolate Chip Cookie",
         "category": "cookie",
-        "price": 250,
+        "price": 300,
         "unit": "piece",
-        "custom_box_unit": 250,
+        "custom_box_unit": 300,
         "moods": ["Chocolate lover", "Warm & comforting"],
         "occasions": ["Gift", "Just craving something"],
         "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790937990/IMG-20261002-WA0186.jpg",
-        "story": "The cookie that behaves — soft centre, crisp edges, chocolate everywhere.",
+        "story": "The cookie that behaves — golden crisp on the outer rim, gooey chocolate pooled inside.",
     },
     {
         "id": "double-chocolate-cookie",
@@ -284,21 +350,120 @@ PRODUCTS = [
         "moods": ["Chocolate lover"],
         "occasions": ["Gift", "Birthday", "Just craving something"],
         "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790938869/IMG-20261002-WA0190.jpg",
-        "story": "Chocolate cookie, chocolate chunks, no restraint.",
+        "story": "Pure chocolate cookie dough crammed with milk and semi-sweet chocolate pockets.",
     },
     {
-        "id": "mini-coconut-loaf",
-        "name": "Mini Coconut Loaf",
-        "category": "loaf",
-        "price": 350,
-        "serves": "1",
-        "serves_min": 1,
-        "serves_max": 1,
-        "unit": "cup",
+        "id": "cookies-pack-4",
+        "name": "Cookies (Pack of 4)",
+        "category": "cookie",
+        "price": 1200,
+        "unit": "pack of 4",
+        "pack_size": 4,
+        "flavors": ["Chocolate Chip", "Double Chocolate", "Oat Flour Chocolate Chip"],
+        "moods": ["Chocolate lover", "Warm & comforting"],
+        "occasions": ["Gift", "Birthday", "Family gathering"],
+        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790937990/IMG-20261002-WA0186.jpg",
+        "story": "Four freshly baked artisanal cookies — pick your 4 favourite cookies in any combination.",
+    },
+    # --- CHEESECAKE & DESSERT BOXES ---
+    {
+        "id": "nyc-cheesecake",
+        "name": "New York Cheesecake",
+        "category": "cheesecake",
+        "price": 2200,
+        "unit": "1 lb",
+        "serves": "6–8",
+        "serves_min": 6,
+        "serves_max": 8,
+        "variants": ["Strawberry Topping", "Lemon Topping"],
+        "moods": ["Fresh & citrusy", "Something different"],
+        "occasions": ["Anniversary", "Birthday", "Gift"],
+        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790867632/IMG-20250913-WA0191.jpg",
+        "story": "Slow-baked, silky New York style cheesecake on a buttery biscuit crust. Comes with your choice of Strawberry or Lemon topping.",
+    },
+    {
+        "id": "pineapple-cheesecake",
+        "name": "Pineapple Dessert Box",
+        "category": "cheesecake",
+        "price": 1800,
+        "unit": "1 lb",
+        "serves": "6–8",
+        "serves_min": 6,
+        "serves_max": 8,
+        "moods": ["Fresh & citrusy", "Something different"],
+        "occasions": ["Tea party", "Gift", "Family gathering"],
+        "image": "https://images.unsplash.com/photo-1587411768638-ec71f8e33b78?auto=format&fit=crop&w=900&q=85",
+        "story": "Bright tropical pineapple chunks against a light, pillowy cream cheese filling.",
+    },
+    {
+        "id": "banoffee-pie",
+        "name": "Banoffee Pie Trifle Box",
+        "category": "cheesecake",
+        "price": 2100,
+        "unit": "1 box",
+        "serves": "6–8",
+        "serves_min": 6,
+        "serves_max": 8,
+        "moods": ["Warm & comforting", "Chocolate lover"],
+        "occasions": ["Family gathering", "Anniversary", "Gift"],
+        "image": "https://images.unsplash.com/photo-1568827999250-3f6afff96e66?auto=format&fit=crop&w=900&q=85",
+        "story": "Rich dulce de leche toffee, fresh sliced bananas, and clouds of coffee-dusted whipped cream.",
+    },
+    {
+        "id": "coffee-cake-nutty",
+        "name": "Coffee Cake with Nutty Brittle",
+        "category": "cheesecake",
+        "price": 1200,
+        "unit": "1 lb",
+        "serves": "5–6",
+        "serves_min": 5,
+        "serves_max": 6,
+        "moods": ["Coffee lover"],
+        "occasions": ["Tea party", "Anniversary", "Graduation"],
+        "image": "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=900&q=85",
+        "story": "Deep roast coffee crumb frosted with brown butter buttercream and crowned with caramelized nut brittle.",
+    },
+    {
+        "id": "fruit-trifle-box",
+        "name": "Fruit Trifle Box",
+        "category": "cheesecake",
+        "price": 1800,
+        "unit": "1 box",
+        "serves": "6–8",
+        "serves_min": 6,
+        "serves_max": 8,
         "moods": ["Fresh & creamy"],
-        "occasions": ["Tea party", "Gift", "Baby born", "Just craving something"],
-        "image": "https://res.cloudinary.com/n9pu62pg/image/upload/v1790870245/image_33e1256e.jpg",
-        "story": "Bright, sunlit slices for the mornings that need a lift and the afternoons that need a smile.",
+        "occasions": ["Family gathering", "Eid", "Tea party"],
+        "image": "https://res.cloudinary.com/dffsqfwok/image/upload/w_900,q_auto,f_auto/v1790760596/Mango_dessert_trays_on_surface_2K_20260930142859_zpcb6w.jpg",
+        "story": "Generous party box layered with golden sponge, fresh seasonal fruit medley, and silky homemade custard.",
+    },
+    {
+        "id": "salted-caramel-brownie-trifle",
+        "name": "Salted Caramel Brownie Trifle Box",
+        "category": "cheesecake",
+        "price": 2500,
+        "unit": "1 box",
+        "serves": "6–8",
+        "serves_min": 6,
+        "serves_max": 8,
+        "moods": ["Rich & indulgent", "Chocolate lover"],
+        "occasions": ["Anniversary", "Birthday", "Gift"],
+        "image": "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=900&q=85",
+        "story": "Fudgy brownie bites, housemade golden salted caramel, and chantilly cream in an indulgent party tray.",
+    },
+    {
+        "id": "malt-cake-box",
+        "name": "Malt Cake Box",
+        "category": "cheesecake",
+        "price": 1800,
+        "unit": "1 box",
+        "serves": "6–8",
+        "serves_min": 6,
+        "serves_max": 8,
+        "moods": ["Chocolate lover", "Something different"],
+        "occasions": ["Birthday", "Family gathering", "Gift"],
+        "image": "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?auto=format&fit=crop&w=900&q=85",
+        "story": "Tender chocolate malt cake generously frosted with our signature malt fudge frosting.",
     },
 ]
 
@@ -348,8 +513,8 @@ FESTIVE_BOXES = [
         "tagline": "The loud, chocolatey kind of joy.",
         "items": [
             {"product_id": "chocolate-chip-banana", "qty": 1},
-            {"product_id": "brownies", "qty": 4},
-            {"product_id": "chocolate-loaf", "qty": 1},
+            {"product_id": "brownies-batch", "qty": 1},
+            {"product_id": "double-chocolate-loaf", "qty": 1},
         ],
         "image": "https://res.cloudinary.com/dffsqfwok/image/upload/v1790781445/Bakery_product_shoot_for_website_2K_20260930201702_wr1y0v.jpg?pid=1700045530510",
     },
@@ -369,7 +534,7 @@ FESTIVE_BOXES = [
         "tagline": "Sweet, generous and made for sharing.",
         "items": [
             {"product_id": "coconut-loaf", "qty": 1},
-            {"product_id": "lotus-cookie", "qty": 4},
+            {"product_id": "double-chocolate-cookie", "qty": 4},
             {"product_id": "papparoti-batch", "qty": 1},
         ],
         "image": "https://res.cloudinary.com/dffsqfwok/image/upload/v1790782194/Eid_dessert_box_product_shoot_2K_20260930202830_gn5gmr.jpg?pid=1513201099705",
@@ -439,6 +604,8 @@ class OrderItem(BaseModel):
     qty: int = Field(ge=1, le=99)
     # When True, use custom_box_unit price instead of the full/batch price.
     custom_box: bool = False
+    selected_variant: Optional[str] = None
+    pack_selection: Optional[dict[str, int]] = None
 
 
 class Customer(BaseModel):
@@ -541,7 +708,7 @@ async def ask_baker(
     # 2. Local / Standard OpenAI fallback
     from openai import AsyncOpenAI
 
-    openai_client = AsyncOpenAI(api_key=key)
+    openai_client = AsyncOpenAI(api_key=key, timeout=3.0)
     response = await openai_client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
@@ -615,31 +782,44 @@ async def match_dessert(request: MatchRequest):
     return {"product": best, "explanation": explanation}
 
 
+IN_MEMORY_MATCHES = {}
+IN_MEMORY_ORDERS = {}
+
+
 @api_router.post("/match/save")
 async def save_match(payload: SaveMatchRequest):
     pmap = _by_id()
     if payload.product_id not in pmap:
         raise HTTPException(status_code=404, detail="Unknown product")
     match_id = uuid.uuid4().hex[:10]
-    await db.saved_matches.insert_one(
-        {
-            "match_id": match_id,
-            "product_id": payload.product_id,
-            "occasion": payload.occasion,
-            "mood": payload.mood,
-            "people": payload.people,
-            "budget": payload.budget,
-            "dietary": payload.dietary,
-            "explanation": payload.explanation,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        }
-    )
+    match_doc = {
+        "match_id": match_id,
+        "product_id": payload.product_id,
+        "occasion": payload.occasion,
+        "mood": payload.mood,
+        "people": payload.people,
+        "budget": payload.budget,
+        "dietary": payload.dietary,
+        "explanation": payload.explanation,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    IN_MEMORY_MATCHES[match_id] = match_doc
+    try:
+        await db.saved_matches.insert_one(match_doc)
+    except Exception as e:
+        logging.getLogger(__name__).warning("MongoDB save_match fallback to in-memory: %s", e)
     return {"id": match_id}
 
 
 @api_router.get("/match/{match_id}")
 async def get_saved_match(match_id: str):
-    doc = await db.saved_matches.find_one({"match_id": match_id}, {"_id": 0})
+    doc = None
+    try:
+        doc = await db.saved_matches.find_one({"match_id": match_id}, {"_id": 0})
+    except Exception:
+        pass
+    if not doc:
+        doc = IN_MEMORY_MATCHES.get(match_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Match not found")
     product = _by_id().get(doc["product_id"])
@@ -666,15 +846,18 @@ async def baker_chat(request: ChatRequest):
         logging.getLogger(__name__).warning("chat LLM error: %s", e)
         reply = "The oven's a little warm right now — try me again in a moment."
         ok = False
-    await db.baker_chats.insert_one(
-        {
-            "session_id": session_id,
-            "message": request.message,
-            "reply": reply,
-            "ok": ok,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        }
-    )
+    try:
+        await db.baker_chats.insert_one(
+            {
+                "session_id": session_id,
+                "message": request.message,
+                "reply": reply,
+                "ok": ok,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }
+        )
+    except Exception:
+        pass
     return {"session_id": session_id, "reply": reply, "ok": ok}
 
 
@@ -702,6 +885,32 @@ async def create_order(payload: CreateOrderRequest):
                 status_code=400,
                 detail=f"{product['name']} is not sold as a custom-box unit",
             )
+
+        # Validate variant if provided
+        if item.selected_variant and product.get("variants"):
+            if item.selected_variant not in product["variants"]:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Invalid variant '{item.selected_variant}' for {product['name']}. Available: {product['variants']}",
+                )
+
+        # Validate pack selection if provided
+        if item.pack_selection:
+            pack_size = product.get("pack_size", 4)
+            count = sum(item.pack_selection.values())
+            if count != pack_size:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"{product['name']} requires exactly {pack_size} items selected (got {count})",
+                )
+            if product.get("flavors"):
+                for flavor in item.pack_selection.keys():
+                    if flavor not in product["flavors"]:
+                        raise HTTPException(
+                            status_code=400,
+                            detail=f"Invalid flavor '{flavor}' for {product['name']}. Available: {product['flavors']}",
+                        )
+
         unit_price = product["custom_box_unit"] if item.custom_box else product["price"]
         line_total = unit_price * item.qty
         subtotal += line_total
@@ -711,6 +920,8 @@ async def create_order(payload: CreateOrderRequest):
                 "name": product["name"],
                 "qty": item.qty,
                 "custom_box": item.custom_box,
+                "selected_variant": item.selected_variant,
+                "pack_selection": item.pack_selection,
                 "unit_price": unit_price,
                 "line_total": line_total,
                 "image": product["image"],
@@ -752,14 +963,24 @@ async def create_order(payload: CreateOrderRequest):
         "status": "pending_confirmation",
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
-    await db.orders.insert_one(order_doc)
+    IN_MEMORY_ORDERS[order_number] = dict(order_doc)
+    try:
+        await db.orders.insert_one(order_doc)
+    except Exception as e:
+        logging.getLogger(__name__).warning("MongoDB create_order fallback to in-memory: %s", e)
     order_doc.pop("_id", None)
     return order_doc
 
 
 @api_router.get("/orders/{order_number}")
 async def get_order(order_number: str):
-    doc = await db.orders.find_one({"order_number": order_number}, {"_id": 0})
+    doc = None
+    try:
+        doc = await db.orders.find_one({"order_number": order_number}, {"_id": 0})
+    except Exception:
+        pass
+    if not doc:
+        doc = IN_MEMORY_ORDERS.get(order_number)
     if not doc:
         raise HTTPException(status_code=404, detail="Order not found")
     return doc
