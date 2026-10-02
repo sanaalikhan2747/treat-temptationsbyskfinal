@@ -248,7 +248,7 @@ PRODUCTS = [
         "unit": "pack of 4",
         "batch_size": 4,
         "pack_size": 4,
-        "flavors": ["Chocolate", "Creme Cheese"],
+        "flavors": ["Chocolate", "Vanilla"],
         "custom_box_unit": 400,
         "moods": ["Warm & comforting"],
         "occasions": ["Tea party", "Family gathering", "Baby born", "Gift"],
