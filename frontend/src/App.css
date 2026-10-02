@@ -24,7 +24,7 @@ body {
   overflow: hidden;
 }
 .nav {
-  height: 84px;
+  height: 100px;
   display: flex;
   align-items: center;
   gap: 28px;
@@ -57,16 +57,21 @@ body {
   letter-spacing: -1px;
 }
 .brand-logo {
-  width: 50px;
-  height: 50px;
+  height: 84px;
+  width: auto;
+  max-width: 470px;
   object-fit: contain;
   display: block;
   flex-shrink: 0;
-  border-radius: 50%;
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+.footer-logo {
+  height: 58px;
+  width: auto;
+  max-width: 300px;
+}
 .brand:hover .brand-logo {
-  transform: scale(1.06) rotate(3deg);
+  transform: scale(1.03);
 }
 .brand b {
   font-size: 13px;
@@ -2150,8 +2155,14 @@ footer a {
 }
 @media (max-width: 800px) {
   .nav {
-    padding: 0 5%;
-    gap: 10px;
+    height: 72px;
+    padding: 0 4%;
+    gap: 12px;
+  }
+  .brand-logo {
+    height: 38px;
+    width: auto;
+    max-width: 195px;
   }
   .nav-links {
     display: none;
@@ -2218,6 +2229,10 @@ footer a {
   }
 }
 @media (max-width: 640px) {
+  .brand-logo {
+    height: 34px;
+    max-width: 170px;
+  }
   .story-grid {
     grid-template-columns: 1fr;
     max-width: 300px;
@@ -2592,4 +2607,3 @@ footer a {
   border-top: 1px solid var(--line);
   background: var(--paper);
 }
-
